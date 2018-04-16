@@ -14,7 +14,7 @@
                class="el-menu-vertical-demo"
                @open="handleOpen"
                @close="handleClose"
-               background-color="#545c64"
+               background-color="#213546"
                text-color="#fff"
                active-text-color="#ffd04b">
         <el-menu-item index="0" @click="toPath('#/', '首页', '0')">
@@ -280,12 +280,12 @@ export default {
   .box-card {
     width: 218px;
     height: 205px;
-    background-color: #545c65;
+    background-color: #121A25;
     margin-left: -1px;
   }
   .titleP {
     font-size: 12px;
-    color: cyan;
+    color: #BCB7D9;
   }
   .item {
     margin-top: 10px;
