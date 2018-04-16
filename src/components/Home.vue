@@ -237,6 +237,9 @@ export default {
         window.location.href = path;
       }
     }
+  },
+  created: function () {
+
   }
 }
 </script>
@@ -272,7 +275,7 @@ export default {
 
   .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 218px;
-    min-height: 520px;
+    min-height: calc(100vh - 225px);
   }
   .box-card {
     width: 218px;
