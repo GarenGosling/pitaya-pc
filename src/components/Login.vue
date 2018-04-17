@@ -2,8 +2,8 @@
   <div class="signin">
     <div class="contain">
       <div class="left">
-        <h1>[ H+ ]</h1>
-          <span>欢迎使用 <strong>H+ 后台主题UI框架</strong></span>
+        <div style="font-size:20px;">[ 火龙果 ]</div><br>
+          <div style="margin-top:20px;">欢迎使用「火龙果」运营管理系统</div>
           <ul>
             <li><i></i> 优势一</li>
             <li><i></i> 优势二</li>
@@ -11,12 +11,12 @@
             <li><i></i> 优势四</li>
             <li><i></i> 优势五</li>
           </ul>
-          <strong>还没有账号？ <a href="#">立即注册&raquo;</a></strong>
+          <strong>还没有账号？ <a href="#/register">立即注册&raquo;</a></strong>
       </div>
       <div class="right">
         <form method="post" action="index.html">
-          <h4>登录：</h4>
-          <p>登录到H+后台主题UI框架</p>
+          <h3>登录：</h3>
+          <p>登录到「火龙果」运营管理系统</p>
           <el-input
             placeholder="用户名"
             suffix-icon="el-icon-mobile-phone"
@@ -51,7 +51,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .signin{position:fixed;left:0;top:0;width:100%;height:calc(100vh);background:url(../../static/image/login-background.jpg) no-repeat center fixed;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;background-size:cover;color:rgba(255,255,255,.95)}
+  .signin{position:fixed;
+    left:0;top:0;
+    width:100%;
+    height:calc(100vh);
+    background:url(../../static/image/login-background.jpg) no-repeat center fixed;
+    -webkit-background-size:cover;
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    background-size:cover;color:#fffff5;}
 
   .left {
     width:50%;
@@ -86,6 +94,7 @@ export default {
   .el-button{
     width:100%;
     margin-top:10px;
+    margin-bottom:10px;
   }
 
 </style>
