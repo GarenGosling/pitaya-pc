@@ -122,7 +122,7 @@
           </el-col>
           <el-col :span="6" style="text-align: right;padding-top: 10px;">
             <el-button plain size="small" icon="el-icon-delete" @click="closeAllTabs">关闭页签</el-button>
-            <el-button plain size="small" icon="el-icon-circle-close">退出系统</el-button>
+            <el-button plain size="small" icon="el-icon-circle-close" @click="logout">退出系统</el-button>
           </el-col>
         </el-row>
       <el-tabs v-model="editableTabsValue2" type="border-card" @tab-remove="removeTab" @tab-click="clickTab" style="width:100%;">
@@ -236,6 +236,9 @@ export default {
       if(path != null){
         window.location.href = path;
       }
+    },
+    logout(){
+      window.location.href = "#/login";
     }
   },
   created: function () {
