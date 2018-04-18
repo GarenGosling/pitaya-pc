@@ -1,4 +1,4 @@
-# pitaya-web-app
+# pitaya-pc
 
 > A Vue.js project
 
