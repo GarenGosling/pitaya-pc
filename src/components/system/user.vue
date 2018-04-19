@@ -17,7 +17,7 @@
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
       <el-button size="small" icon="el-icon-search" @click="search">搜索</el-button>
       <el-button type="primary" size="small" icon="el-icon-refresh" @click="resetSearch">重置</el-button>
-      <el-button type="success" size="small" icon="el-icon-news">新增</el-button>
+      <el-button type="success" size="small" icon="el-icon-news" @click="dialogFormVisible = true">新增</el-button>
       <el-button type="info" size="small" icon="el-icon-download">模板</el-button>
       <el-button type="warning" size="small" icon="el-icon-upload2">上传</el-button>
       <el-button type="danger" size="small" icon="el-icon-document">导出</el-button>
@@ -41,13 +41,30 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="[5, 10, 20, 50, 100, 500]"
-        :page-size="search.length"
+        :current-page="currentPage4"
+        :page-sizes="[1, 5, 10, 20, 50, 100, 500]"
+        :page-size="searchParam.length"
         layout="total, sizes, prev, pager, next, jumper"
         :total="recordsTotal">
       </el-pagination>
     </div>
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="活动名称" :label-width="formLabelWidth">
+          <el-input v-model="form.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="活动区域" :label-width="formLabelWidth">
+          <el-select v-model="form.region" placeholder="请选择活动区域">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -57,6 +74,7 @@ export default {
   data () {
     return {
       searchParam: {
+        start: 0,
         length: 10,
         code: '',
         nickName: '',
@@ -65,24 +83,35 @@ export default {
       },
       tableData: [],
       recordsTotal: 0,
-      currentPage: 1
-    }
-  },
-  computed: {
-    start: function () {
-      return (this.currentPage-1)*this.searchParam.length;
+      currentPage4: 4,
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '120px'
     }
   },
   methods: {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
+      this.searchParam.length = val;
+      this.search();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+      this.searchParam.start = (val-1)*this.searchParam.length;
+      this.search();
     },
     search(){
       var that = this;
-      var url = basePath + 'sysUser/page?start='+that.start+'&length='+that.searchParam.length+'&code=' + that.searchParam.code + '&nickName=' + that.searchParam.nickName + '&realName=' + that.searchParam.realName + '&phone=' + that.searchParam.phone;
+      var url = basePath + 'sysUser/page?start='+that.searchParam.start+'&length='+that.searchParam.length+'&code=' + that.searchParam.code + '&nickName=' + that.searchParam.nickName + '&realName=' + that.searchParam.realName + '&phone=' + that.searchParam.phone;
       this.$http.get(url, []).then((response) => {
         that.tableData = response.body.data.data;
         that.recordsTotal = response.body.data.recordsTotal;
