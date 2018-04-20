@@ -45,7 +45,7 @@
       <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
       <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="createTime" label="注册时间" width="200"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="200"></el-table-column>
     </el-table>
     <div class="block" style="margin-top: 10px;">
       <el-pagination
@@ -61,7 +61,7 @@
 
     <!-- 【新增】对话框 开始-->
     <el-dialog title="新增" :visible.sync="saveDialogVisible" @close="closeSaveDialog">
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="用户名" v-model="saveParam.nickName"/>
         </el-col>
@@ -69,7 +69,7 @@
           <el-input placeholder="姓名" v-model="saveParam.realName"/>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="手机号" v-model="saveParam.phone"/>
         </el-col>
@@ -77,7 +77,7 @@
           <el-input placeholder="身份证号" v-model="saveParam.idNumber"/>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-select v-model="saveParam.province" filterable placeholder="省份" style="width: 100%;">
             <el-option
@@ -99,7 +99,7 @@
           </el-select>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="微信号" v-model="saveParam.wechat"/>
         </el-col>
@@ -107,7 +107,7 @@
           <el-input placeholder="QQ号" v-model="saveParam.qq"/>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="邮箱" v-model="saveParam.email"/>
         </el-col>
@@ -167,12 +167,22 @@
         <el-col :span="3" class="detail-head">角色：</el-col>
         <el-col :span="9" class="detail-content">{{detailParam.roles || '-'}}</el-col>
       </el-row>
+      <el-row :gutter="20" class="detail-row">
+        <el-col :span="3" class="detail-head">创建时间：</el-col>
+        <el-col :span="9" class="detail-content">{{detailParam.createTime || '-'}}</el-col>
+        <el-col :span="3" class="detail-head"></el-col>
+        <el-col :span="9" class="detail-content"></el-col>
+      </el-row>
     </el-dialog>
     <!-- 【查看】对话框 结束-->
 
     <!-- 【编辑】对话框 开始-->
     <el-dialog title="编辑" :visible.sync="modifyDialogVisible" @close="closeModifyDialog">
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
+        <el-col :span="12" class="modify-head">ID：{{modifyParam.code || '-'}}</el-col>
+        <el-col :span="12" class="modify-head">创建时间：{{modifyParam.createTime || '-'}}</el-col>
+      </el-row>
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="用户名" v-model="modifyParam.nickName"/>
         </el-col>
@@ -180,7 +190,7 @@
           <el-input placeholder="姓名" v-model="modifyParam.realName"/>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="手机号" v-model="modifyParam.phone"/>
         </el-col>
@@ -188,7 +198,7 @@
           <el-input placeholder="身份证号" v-model="modifyParam.idNumber"/>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-select v-model="modifyParam.province" filterable placeholder="省份" style="width: 100%;">
             <el-option
@@ -210,7 +220,7 @@
           </el-select>
         </el-col>
       </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
+      <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
           <el-input placeholder="微信号" v-model="modifyParam.wechat"/>
         </el-col>
@@ -551,5 +561,8 @@ export default {
   }
   .detail-content{
     text-align: left;
+  }
+  .modify-head{
+    text-align: left;font-weight: bolder;
   }
 </style>
