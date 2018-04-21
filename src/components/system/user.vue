@@ -24,7 +24,7 @@
       <el-button type="danger" size="small" icon="el-icon-document">删除</el-button>
     </el-row>
     <el-table
-      :data="tableData"
+      :data="page.tableData"
       stripe
       style="width: 100%;margin-top: 10px;text-align: left;" height="calc(100vh - 380px)">
       <el-table-column type="selection" width="55" fixed></el-table-column>
@@ -45,41 +45,41 @@
       <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
       <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="200"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="150"></el-table-column>
     </el-table>
     <div class="block" style="margin-top: 10px;">
       <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage4"
+        @size-change="pageSizeChange"
+        @current-change="pageNoChange"
+        :current-page="page.currentPage"
         :page-sizes="[1, 5, 10, 20, 50, 100, 500]"
         :page-size="searchParam.length"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="recordsTotal">
+        :total="page.recordsTotal">
       </el-pagination>
     </div>
 
     <!-- 【新增】对话框 开始-->
-    <el-dialog title="新增" :visible.sync="saveDialogVisible" @close="closeSaveDialog">
+    <el-dialog title="新增" :visible.sync="dialog.saveDialogVisible" @close="closeSaveDialog">
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="用户名" v-model="saveParam.nickName"/>
+          <el-input placeholder="用户名" v-model="smdParam.nickName"/>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="姓名" v-model="saveParam.realName"/>
+          <el-input placeholder="姓名" v-model="smdParam.realName"/>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="手机号" v-model="saveParam.phone"/>
+          <el-input placeholder="手机号" v-model="smdParam.phone"/>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="身份证号" v-model="saveParam.idNumber"/>
+          <el-input placeholder="身份证号" v-model="smdParam.idNumber"/>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-select v-model="saveParam.province" filterable placeholder="省份" style="width: 100%;">
+          <el-select v-model="smdParam.province" filterable placeholder="省份" style="width: 100%;">
             <el-option
               v-for="item in options.province"
               :key="item.value"
@@ -89,7 +89,7 @@
           </el-select>
         </el-col>
         <el-col :span="12">
-          <el-select v-model="saveParam.city" filterable placeholder="城市" style="width: 100%;">
+          <el-select v-model="smdParam.city" filterable placeholder="城市" style="width: 100%;">
             <el-option
               v-for="item in options.city"
               :key="item.value"
@@ -101,18 +101,18 @@
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="微信号" v-model="saveParam.wechat"/>
+          <el-input placeholder="微信号" v-model="smdParam.wechat"/>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="QQ号" v-model="saveParam.qq"/>
+          <el-input placeholder="QQ号" v-model="smdParam.qq"/>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="邮箱" v-model="saveParam.email"/>
+          <el-input placeholder="邮箱" v-model="smdParam.email"/>
         </el-col>
         <el-col :span="12">
-          <el-select v-model="roles" filterable multiple placeholder="角色" style="width: 100%;">
+          <el-select v-model="smdExtendParam.roles" filterable multiple placeholder="角色" style="width: 100%;">
             <el-option
               v-for="item in options.roles"
               :key="item.value"
@@ -123,53 +123,53 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="saveDialogVisible = false">取 消</el-button>
+        <el-button @click="dialog.saveDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="saveDialogCommit">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【新增】对话框 结束-->
 
     <!-- 【查看】对话框 开始-->
-    <el-dialog title="查看" :visible.sync="detailDialogVisible" width="60%" @close="closeDetailDialog">
+    <el-dialog title="查看" :visible.sync="dialog.detailDialogVisible" width="60%" @close="closeDetailDialog">
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">ID：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.code || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.code || '-'}}</el-col>
         <el-col :span="3" class="detail-head">用户名：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.nickName || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.nickName || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">姓名：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.realName || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.realName || '-'}}</el-col>
         <el-col :span="3" class="detail-head">密码：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.password || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.password || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">手机号：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.phone || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.phone || '-'}}</el-col>
         <el-col :span="3" class="detail-head">身份证号：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.idNumber || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.idNumber || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">省份：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.province || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.province || '-'}}</el-col>
         <el-col :span="3" class="detail-head">城市：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.city || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.city || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">微信：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.wechat || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.wechat || '-'}}</el-col>
         <el-col :span="3" class="detail-head">QQ：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.qq || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.qq || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">Email：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.email || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.email || '-'}}</el-col>
         <el-col :span="3" class="detail-head">角色：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.roles || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{rolesUtil(smdParam.roles) || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="3" class="detail-head">创建时间：</el-col>
-        <el-col :span="9" class="detail-content">{{detailParam.createTime || '-'}}</el-col>
+        <el-col :span="9" class="detail-content">{{smdParam.createTime || '-'}}</el-col>
         <el-col :span="3" class="detail-head"></el-col>
         <el-col :span="9" class="detail-content"></el-col>
       </el-row>
@@ -177,30 +177,30 @@
     <!-- 【查看】对话框 结束-->
 
     <!-- 【编辑】对话框 开始-->
-    <el-dialog title="编辑" :visible.sync="modifyDialogVisible" @close="closeModifyDialog">
+    <el-dialog title="编辑" :visible.sync="dialog.modifyDialogVisible" @close="closeModifyDialog">
       <el-row :gutter="20" class="detail-row">
-        <el-col :span="12" class="modify-head">ID：{{modifyParam.code || '-'}}</el-col>
-        <el-col :span="12" class="modify-head">创建时间：{{modifyParam.createTime || '-'}}</el-col>
+        <el-col :span="12" class="modify-head">ID：{{smdParam.code || '-'}}</el-col>
+        <el-col :span="12" class="modify-head">创建时间：{{smdParam.createTime || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="用户名" v-model="modifyParam.nickName"/>
+          <el-input placeholder="用户名" v-model="smdParam.nickName"/>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="姓名" v-model="modifyParam.realName"/>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" class="detail-row">
-        <el-col :span="12">
-          <el-input placeholder="手机号" v-model="modifyParam.phone"/>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="身份证号" v-model="modifyParam.idNumber"/>
+          <el-input placeholder="姓名" v-model="smdParam.realName"/>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-select v-model="modifyParam.province" filterable placeholder="省份" style="width: 100%;">
+          <el-input placeholder="手机号" v-model="smdParam.phone"/>
+        </el-col>
+        <el-col :span="12">
+          <el-input placeholder="身份证号" v-model="smdParam.idNumber"/>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" class="detail-row">
+        <el-col :span="12">
+          <el-select v-model="smdParam.province" filterable placeholder="省份" style="width: 100%;">
             <el-option
               v-for="item in options.province"
               :key="item.value"
@@ -210,7 +210,7 @@
           </el-select>
         </el-col>
         <el-col :span="12">
-          <el-select v-model="modifyParam.city" filterable placeholder="城市" style="width: 100%;">
+          <el-select v-model="smdParam.city" filterable placeholder="城市" style="width: 100%;">
             <el-option
               v-for="item in options.city"
               :key="item.value"
@@ -222,18 +222,18 @@
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="微信号" v-model="modifyParam.wechat"/>
+          <el-input placeholder="微信号" v-model="smdParam.wechat"/>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="QQ号" v-model="modifyParam.qq"/>
+          <el-input placeholder="QQ号" v-model="smdParam.qq"/>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top: 10px;">
         <el-col :span="12">
-          <el-input placeholder="邮箱" v-model="modifyParam.email"/>
+          <el-input placeholder="邮箱" v-model="smdParam.email"/>
         </el-col>
         <el-col :span="12">
-          <el-select v-model="roles" filterable multiple placeholder="角色" style="width: 100%;">
+          <el-select v-model="smdExtendParam.roles" filterable multiple placeholder="角色" style="width: 100%;">
             <el-option
               v-for="item in options.roles"
               :key="item.value"
@@ -244,17 +244,17 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="modifyDialogVisible = false">取 消</el-button>
+        <el-button @click="dialog.modifyDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="modifyDialogCommit">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【编辑】对话框 结束-->
 
     <!-- 【删除】对话框 开始-->
-    <el-dialog title="提示" :visible.sync="deleteDialogVisible" @close="closeDeleteDialog" width="30%">
+    <el-dialog title="提示" :visible.sync="dialog.deleteDialogVisible" @close="closeDeleteDialog" width="30%">
       <span>确定删除该用户为「{{deleteParam.nickName}}」的用户？</span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="deleteDialogVisible = false">取 消</el-button>
+        <el-button @click="dialog.deleteDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="deleteDialogCommit">确 定</el-button>
       </span>
     </el-dialog>
@@ -273,7 +273,38 @@ export default {
   name: 'Index',
   data () {
     return {
-      roles: [],
+      searchParam: {
+        start: 0,
+        length: 10,
+        code: '',
+        nickName: '',
+        realName: '',
+        phone: ''
+      },
+      smdParam: {
+        id: '',
+        code: '',
+        nickName: '',
+        realName: '',
+        password: '',
+        phone: '',
+        idNumber: '',
+        province: '',
+        city: '',
+        wechat: '',
+        qq: '',
+        email: '',
+        roles: '',
+        createTime: ''
+      },
+      smdExtendParam: {
+        roles: []
+      },
+      deleteParam: {
+        id: '',
+        code: '',
+        nickName: ''
+      },
       options: {
         province: [
           {value: '01',label: '北京'},
@@ -295,94 +326,31 @@ export default {
           {value: 'EEE',label: '报表管理员'},
         ]
       },
-      searchParam: {
-        start: 0,
-        length: 10,
-        code: '',
-        nickName: '',
-        realName: '',
-        phone: ''
+      page: {
+        tableData: [],
+        recordsTotal: 0,
+        currentPage: 0,
       },
-      saveParam: {
-        nickName: '',
-        realName: '',
-        phone: '',
-        idNumber: '',
-        province: '',
-        city: '',
-        wechat: '',
-        qq: '',
-        email: '',
-        roles:''
-      },
-      detailParam: {
-        id: '',
-        code: '',
-        nickName: '',
-        realName: '',
-        password: '',
-        phone: '',
-        idNumber: '',
-        province: '',
-        city: '',
-        wechat: '',
-        qq: '',
-        email: '',
-        roles: '',
-        createTime: ''
-      },
-      modifyParam: {
-        nickName: '',
-        realName: '',
-        phone: '',
-        idNumber: '',
-        province: '',
-        city: '',
-        wechat: '',
-        qq: '',
-        email: '',
-        roles:''
-      },
-      deleteParam: {
-        nickName: ''
-      },
-      tableData: [],
-      recordsTotal: 0,
-      currentPage4: 4,
-      saveDialogVisible: false,
-      modifyDialogVisible: false,
-      detailDialogVisible: false,
-      deleteDialogVisible: false,
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
-      formLabelWidth: '120px'
+      dialog: {
+        saveDialogVisible: false,
+        modifyDialogVisible: false,
+        detailDialogVisible: false,
+        deleteDialogVisible: false,
+      }
     }
   },
   methods: {
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-      this.searchParam.length = val;
-      this.search();
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-      this.searchParam.start = (val-1)*this.searchParam.length;
-      this.search();
-    },
     search(){
       var that = this;
-      var url = basePath + 'sysUser/page?start='+that.searchParam.start+'&length='+that.searchParam.length+'&code=' + that.searchParam.code + '&nickName=' + that.searchParam.nickName + '&realName=' + that.searchParam.realName + '&phone=' + that.searchParam.phone;
-      this.$http.get(url, []).then((response) => {
-        that.tableData = response.body.data.data;
-        that.recordsTotal = response.body.data.recordsTotal;
+      var url = basePath + 'sysUser/page';
+      this.$http.post(url, that.searchParam).then((response) => {
+        that.page.tableData = response.body.data.data;
+        for(var i=0;i<that.page.tableData.length;i++){
+          that.page.tableData[i].province = that.optionUtil(that.page.tableData[i].province, that.options.province);
+          that.page.tableData[i].city = that.optionUtil(that.page.tableData[i].city, that.options.city);
+          that.page.tableData[i].createTime = that.dateTimeUtil(that.page.tableData[i].createTime);
+        }
+        that.page.recordsTotal = response.body.data.recordsTotal;
       }, (response) => {
         console.log("err"+response);
       });
@@ -392,27 +360,127 @@ export default {
       this.searchParam.nickName = '';
       this.searchParam.realName = '';
       this.searchParam.phone = '';
+      this.search();
+    },
+    saveDialogCommit(){
+      var that = this;
+      if(that.smdExtendParam.roles){
+        that.smdParam.roles = that.smdExtendParam.roles.join(',');
+      }
+      var url = basePath + 'sysUser/save';
+      that.$http.post(url, that.smdParam).then((response) => {
+        that.closeSaveDialog();
+        that.search();
+      }, (response) => {
+        alert("fail");
+      });
+    },
+    modifyDialogCommit(){
+      var that = this;
+      if(that.smdExtendParam.roles){
+        that.smdParam.roles = that.smdExtendParam.roles.join(',');
+      }
+      var nickName = that.smdParam.nickName;
+      var url = basePath + 'sysUser/modify';
+      that.$http.put(url, that.smdParam).then((response) => {
+        that.closeModifyDialog();
+        that.searchParam.nickName = nickName;
+        that.search();
+      }, (response) => {
+        alert("fail");
+      });
+    },
+    deleteDialogCommit(){
+      var that = this;
+      var nickName = that.deleteParam.nickName;
+      var url = basePath + 'sysUser/delete?id=' + this.deleteParam.id;
+      that.$http.delete(url, []).then((response) => {
+        that.closeDeleteDialog();
+        that.searchParam.nickName = nickName;
+        that.search();
+      }, (response) => {
+        alert("fail");
+      });
     },
     openSaveDialog(){
-      this.saveDialogVisible = true
+      this.dialog.saveDialogVisible = true
+    },
+    closeSaveDialog(){
+      this.cleanSmdDialog();
+      this.dialog.saveDialogVisible =false;
+    },
+    openModifyDialog(row){
+      this.setSmdDialog(row);
+      if(row.roles){
+        this.smdExtendParam.roles = row.roles.split(',');
+      }
+      this.dialog.modifyDialogVisible = true
+    },
+    closeModifyDialog(){
+      this.cleanSmdDialog();
+      this.dialog.modifyDialogVisible =false;
     },
     openDetailDialog(row) {
-      console.log("row:"+row);
-      this.detailParam.id = row.id;
-      this.detailParam.code = row.code;
-      this.detailParam.nickName = row.nickName;
-      this.detailParam.realName = row.realName;
-      this.detailParam.password = row.password;
-      this.detailParam.phone = row.phone;
-      this.detailParam.idNumber = row.idNumber;
-      this.detailParam.province = row.province;
-      this.detailParam.city = row.city;
-      this.detailParam.wechat = row.wechat;
-      this.detailParam.qq = row.qq;
-      this.detailParam.email = row.email;
-      this.detailParam.roles = this.rolesUtil(row.roles);
-      this.detailParam.createTime = row.createTime;
-      this.detailDialogVisible = true;
+      this.setSmdDialog(row);
+      this.dialog.detailDialogVisible = true;
+    },
+    closeDetailDialog(){
+      this.cleanSmdDialog();
+      this.dialog.detailDialogVisible = false;
+    },
+    openDeleteDialog(row){
+      this.deleteParam.id = row.id;
+      this.deleteParam.code = row.code;
+      this.deleteParam.nickName = row.nickName;
+      this.dialog.deleteDialogVisible = true;
+    },
+    closeDeleteDialog(){
+      this.deleteParam.id = '';
+      this.deleteParam.code = '';
+      this.deleteParam.nickName = '';
+      this.dialog.deleteDialogVisible = false;
+    },
+    pageSizeChange(val) {
+      this.searchParam.start = 0;
+      this.searchParam.length = val;
+      this.search();
+    },
+    pageNoChange(val) {
+      this.searchParam.start = (val-1)*this.searchParam.length;
+      this.search();
+    },
+    setSmdDialog(row){
+        this.smdParam.id = row.id;
+        this.smdParam.code = row.code;
+        this.smdParam.nickName = row.nickName;
+        this.smdParam.realName = row.realName;
+        this.smdParam.password = row.password;
+        this.smdParam.phone = row.phone;
+        this.smdParam.idNumber = row.idNumber;
+        this.smdParam.province = row.province;
+        this.smdParam.city = row.city;
+        this.smdParam.wechat = row.wechat;
+        this.smdParam.qq = row.qq;
+        this.smdParam.email = row.email;
+        this.smdParam.roles = row.roles;
+        this.smdParam.createTime = row.createTime;
+    },
+    cleanSmdDialog(){
+      this.smdParam.id = '';
+      this.smdParam.code = '';
+      this.smdParam.nickName = '';
+      this.smdParam.realName = '';
+      this.smdParam.password = '';
+      this.smdParam.phone = '';
+      this.smdParam.idNumber = '';
+      this.smdParam.province = '';
+      this.smdParam.city = '';
+      this.smdParam.wechat = '';
+      this.smdParam.qq = '';
+      this.smdParam.email = '';
+      this.smdParam.roles = '';
+      this.smdExtendParam.roles = [];
+      this.smdParam.createTime = '';
     },
     rolesUtil(values){
       var that = this;
@@ -438,106 +506,19 @@ export default {
       }
       return texts;
     },
-    openModifyDialog(row){
-      this.modifyParam.id = row.id;
-      this.modifyParam.code = row.code;
-      this.modifyParam.nickName = row.nickName;
-      this.modifyParam.realName = row.realName;
-      this.modifyParam.password = row.password;
-      this.modifyParam.phone = row.phone;
-      this.modifyParam.idNumber = row.idNumber;
-      this.modifyParam.province = row.province;
-      this.modifyParam.city = row.city;
-      this.modifyParam.wechat = row.wechat;
-      this.modifyParam.qq = row.qq;
-      this.modifyParam.email = row.email;
-      this.modifyParam.roles = row.roles;
-      if(row.roles){
-        this.roles = row.roles.split(',');
-      }
-      this.modifyParam.createTime = row.createTime;
-      this.modifyDialogVisible = true
-    },
-    openDeleteDialog(row){
-      this.deleteParam.code = row.code;
-      this.deleteParam.nickName = row.nickName;
-      this.deleteDialogVisible = true;
-    },
-    saveDialogCommit(){
-      var that = this;
-      if(that.roles){
-        that.saveParam.roles = that.roles.join(',');
-      }
-      var url = basePath + 'sysUser/save';
-      this.$http.post(url, that.saveParam).then((response) => {
-        console.log(response);
-        this.closeSaveDialog();
-        this.search();
-      }, (response) => {
-        if(that.saveParam.roles){
-          that.saveParam.roles = that.saveParam.roles.split(',');
+    optionUtil(value, options){
+      if(options){
+        for(var i=0;i<options.length;i++){
+          var option = options[i];
+          if(option.value == value){
+            var label = option.label;
+            return label;
+          }
         }
-        console.log("err"+response);
-      });
+      }
     },
-    modifyDialogCommit(){
-      alert("modifyDialogCommit");
-    },
-    deleteDialogCommit(){
-      alert("deleteDialogCommit");
-    },
-    closeSaveDialog(){
-      this.saveParam.nickName = '';
-      this.saveParam.realName = '';
-      this.saveParam.phone = '';
-      this.saveParam.idNumber = '';
-      this.saveParam.province = '';
-      this.saveParam.city = '';
-      this.saveParam.wechat = '';
-      this.saveParam.qq = '';
-      this.saveParam.email = '';
-      this.roles = [];
-      this.saveDialogVisible =false;
-    },
-    closeDetailDialog(){
-      this.detailParam.id = '';
-      this.detailParam.code = '';
-      this.detailParam.nickName = '';
-      this.detailParam.realName = '';
-      this.detailParam.password = '';
-      this.detailParam.phone = '';
-      this.detailParam.idNumber = '';
-      this.detailParam.province = '';
-      this.detailParam.city = '';
-      this.detailParam.wechat = '';
-      this.detailParam.qq = '';
-      this.detailParam.email = '';
-      this.detailParam.roles = '';
-      this.roles = '';
-      this.detailParam.createTime = '';
-      this.detailDialogVisible = false;
-    },
-    closeModifyDialog(){
-      this.modifyParam.id = '';
-      this.modifyParam.code = '';
-      this.modifyParam.nickName = '';
-      this.modifyParam.realName = '';
-      this.modifyParam.password = '';
-      this.modifyParam.phone = '';
-      this.modifyParam.idNumber = '';
-      this.modifyParam.province = '';
-      this.modifyParam.city = '';
-      this.modifyParam.wechat = '';
-      this.modifyParam.qq = '';
-      this.modifyParam.email = '';
-      this.modifyParam.roles = '';
-      this.roles = '';
-      this.modifyParam.createTime = '';
-      this.modifyDialogVisible =false;
-    },
-    closeDeleteDialog(){
-      this.deleteParam.code = '';
-      this.deleteParam.nickName = '';
+    dateTimeUtil(value){
+      return new Date(value).format("yyyy-MM-dd hh:mm:ss");
     }
   },
   mounted: function () {
@@ -548,11 +529,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .el-row {
-  }
-  .el-col {
-    border-radius: 4px;
-  }
   .detail-row {
     margin-top: 10px;
   }
