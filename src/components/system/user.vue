@@ -19,8 +19,8 @@
       <el-button size="small" icon="el-icon-refresh" @click="resetSearch" :loading="searchExtendParam.loading">重置</el-button>
       <el-button type="primary" size="small" icon="el-icon-news" @click="openSaveDialog">新增</el-button>
       <el-button type="success" size="small" icon="el-icon-download" @click="downloadExcelModel">模板</el-button>
-      <el-button type="info" size="small" icon="el-icon-upload2">上传</el-button>
-      <el-button type="warning" size="small" icon="el-icon-document">导出</el-button>
+      <el-button type="info" size="small" icon="el-icon-upload2" @click="openImportDialog">导入</el-button>
+      <el-button type="warning" size="small" icon="el-icon-document" @click="exportExcel" :loading="exportExcelLoading">导出</el-button>
       <el-button type="danger" size="small" icon="el-icon-document" @click="openRemoveDialog">删除</el-button>
     </el-row>
     <el-table
@@ -308,17 +308,48 @@
       </span>
     </el-dialog>
     <!-- 【批量删除】对话框 开始-->
+
+    <!-- 【Excel导入用户信息】对话框 开始-->
+    <el-dialog title="导入Excel格式的用户数据" :visible.sync="dialog.importDialogVisible" @close="closeImportDialog" width="40%">
+      <el-upload
+        class="upload-demo"
+        ref="importExcel"
+        drag
+        :action="importExcel.action"
+        :before-upload="beforeAvatarUpload"
+        :auto-upload="false" :limit="1"
+        @close="closeImportDialog"
+        :on-success="importExcelSuccess"
+        :on-error="importExcelFail">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传一个.xlsx格式的Excel文件，且不超过2M</div>
+      </el-upload>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeImportDialog" :loading="importExtendParam.importLoading">取 消</el-button>
+        <el-button type="primary" @click="importDialogCommit" :loading="importExtendParam.importLoading">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 【Excel导入用户信息】对话框 结束-->
+
+    <!-- 【Excel导入用户信息，失败列表】对话框 开始-->
+    <el-dialog title="导入失败列表" :visible.sync="dialog.importFailDialogVisible" @close="closeImportFailDialog" width="50%">
+      <el-table :data="importExcel.failList" style="width: 100%;text-align: left;">
+        <el-table-column prop="rowNo" label="Excel行号" width="100"></el-table-column>
+        <el-table-column prop="res" label="执行结果" width="100"></el-table-column>
+        <el-table-column prop="message" label="失败原因"></el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeImportFailDialog">关 闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 【Excel导入用户信息，失败列表】对话框 结束-->
   </div>
 </template>
 
 <script>
-import ElRow from "element-ui/packages/row/src/row";
-import ElCol from "element-ui/packages/col/src/col";
 
 export default {
-  components: {
-    ElCol,
-    ElRow},
   name: 'Index',
   data () {
     return {
@@ -363,6 +394,12 @@ export default {
         deleteLoading: false,
         removeLoading: false
       },
+      importParam: {
+
+      },
+      importExtendParam: {
+        importLoading: false,
+      },
       removeParams:[],
       options: {
         province: [
@@ -396,8 +433,15 @@ export default {
         modifyDialogVisible: false,
         detailDialogVisible: false,
         deleteDialogVisible: false,
-        removeDialogVisible: false
-      }
+        removeDialogVisible: false,
+        importDialogVisible: false,
+        importFailDialogVisible: false
+      },
+      importExcel: {
+        action: basePath + 'sysUser/importExcel',
+        failList: []
+      },
+      exportExcelLoading: false
     }
   },
   methods: {
@@ -483,6 +527,9 @@ export default {
         that.search();
       });
     },
+    importDialogCommit(){
+      this.$refs.importExcel.submit();
+    },
     openSaveDialog(){
       this.dialog.saveDialogVisible = true
     },
@@ -541,6 +588,20 @@ export default {
       this.page.multipleSelection = [];
       this.$refs.multipleTable.clearSelection();
       this.dialog.removeDialogVisible = false;
+    },
+    openImportDialog(){
+      this.dialog.importDialogVisible = true;
+    },
+    closeImportDialog(){
+      this.dialog.importDialogVisible = false;
+      this.$refs.importExcel.clearFiles();
+    },
+    openImportFailDialog(){
+      this.dialog.importFailDialogVisible = true;
+    },
+    closeImportFailDialog(){
+      this.importExcel.failList = [];
+      this.dialog.importFailDialogVisible = false;
     },
     pageSizeChange(val) {
       this.searchParam.start = 0;
@@ -643,6 +704,31 @@ export default {
     },
     downloadExcelModel(){
       window.location.href = "../../static/excel/批量导入用户信息模板.xlsx";
+    },
+    beforeAvatarUpload(file) {
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        this.$message.error('导入文件大小不能超过 2MB!');
+      }
+      return isLt2M;
+    },
+    importExcelSuccess(response, file, fileList){
+      console.log(response.data.failList);
+      this.importExcel.failList = response.data.failList;
+      this.closeImportDialog();
+      this.openImportFailDialog();
+    },
+    importExcelFail(err, file, fileList){
+      this.$message.error(err.message);
+    },
+    exportExcel(){
+      var that = this;
+      var url = basePath + "sysUser/exportExcel" +
+        "?code=" + this.searchParam.code +
+        "&nickName=" + this.searchParam.nickName +
+        "&realName=" + this.searchParam.realName +
+        "&phone=" + this.searchParam.phone;
+      window.location.href = url;
     }
   },
   mounted: function () {
