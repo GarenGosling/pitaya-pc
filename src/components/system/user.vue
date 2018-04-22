@@ -15,18 +15,21 @@
       </el-col>
     </el-row>
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <el-button size="small" icon="el-icon-search" @click="search">搜索</el-button>
-      <el-button size="small" icon="el-icon-refresh" @click="resetSearch">重置</el-button>
+      <el-button size="small" icon="el-icon-search" @click="search" :loading="searchExtendParam.loading">搜索</el-button>
+      <el-button size="small" icon="el-icon-refresh" @click="resetSearch" :loading="searchExtendParam.loading">重置</el-button>
       <el-button type="primary" size="small" icon="el-icon-news" @click="openSaveDialog">新增</el-button>
-      <el-button type="success" size="small" icon="el-icon-download">模板</el-button>
+      <el-button type="success" size="small" icon="el-icon-download" @click="downloadExcelModel">模板</el-button>
       <el-button type="info" size="small" icon="el-icon-upload2">上传</el-button>
       <el-button type="warning" size="small" icon="el-icon-document">导出</el-button>
-      <el-button type="danger" size="small" icon="el-icon-document">删除</el-button>
+      <el-button type="danger" size="small" icon="el-icon-document" @click="openRemoveDialog">删除</el-button>
     </el-row>
     <el-table
+      ref="multipleTable"
       :data="page.tableData"
       stripe
-      style="width: 100%;margin-top: 10px;text-align: left;" height="calc(100vh - 380px)">
+      v-loading="searchExtendParam.loading"
+      style="width: 100%;margin-top: 10px;text-align: left;" height="calc(100vh - 380px)"
+      @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" fixed></el-table-column>
       <el-table-column type="index" width="50" fixed></el-table-column>
       <el-table-column fixed="left" label="操作" width="150">
@@ -63,18 +66,26 @@
     <el-dialog title="新增" :visible.sync="dialog.saveDialogVisible" @close="closeSaveDialog">
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="用户名" v-model="smdParam.nickName"/>
+          <el-input placeholder="用户名" v-model="smdParam.nickName">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="姓名" v-model="smdParam.realName"/>
+          <el-input placeholder="姓名（必填）" v-model="smdParam.realName">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="手机号" v-model="smdParam.phone"/>
+          <el-input placeholder="手机号（必填）" v-model="smdParam.phone">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="身份证号" v-model="smdParam.idNumber"/>
+          <el-input placeholder="身份证号" v-model="smdParam.idNumber">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
@@ -101,15 +112,21 @@
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="微信号" v-model="smdParam.wechat"/>
+          <el-input placeholder="微信号" v-model="smdParam.wechat">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="QQ号" v-model="smdParam.qq"/>
+          <el-input placeholder="QQ号" v-model="smdParam.qq">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="邮箱" v-model="smdParam.email"/>
+          <el-input placeholder="邮箱" v-model="smdParam.email">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
           <el-select v-model="smdExtendParam.roles" filterable multiple placeholder="角色" style="width: 100%;">
@@ -123,8 +140,8 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.saveDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveDialogCommit">确 定</el-button>
+        <el-button @click="dialog.saveDialogVisible = false" :loading="smdExtendParam.saveLoading">取 消</el-button>
+        <el-button type="primary" @click="saveDialogCommit" :loading="smdExtendParam.saveLoading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【新增】对话框 结束-->
@@ -184,18 +201,26 @@
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="用户名" v-model="smdParam.nickName"/>
+          <el-input placeholder="用户名" v-model="smdParam.nickName">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="姓名" v-model="smdParam.realName"/>
+          <el-input placeholder="姓名" v-model="smdParam.realName">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="手机号" v-model="smdParam.phone"/>
+          <el-input placeholder="手机号" v-model="smdParam.phone">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="身份证号" v-model="smdParam.idNumber"/>
+          <el-input placeholder="身份证号" v-model="smdParam.idNumber">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
@@ -222,15 +247,21 @@
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
-          <el-input placeholder="微信号" v-model="smdParam.wechat"/>
+          <el-input placeholder="微信号" v-model="smdParam.wechat">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
-          <el-input placeholder="QQ号" v-model="smdParam.qq"/>
+          <el-input placeholder="QQ号" v-model="smdParam.qq">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" style="margin-top: 10px;">
         <el-col :span="12">
-          <el-input placeholder="邮箱" v-model="smdParam.email"/>
+          <el-input placeholder="邮箱" v-model="smdParam.email">
+            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
+          </el-input>
         </el-col>
         <el-col :span="12">
           <el-select v-model="smdExtendParam.roles" filterable multiple placeholder="角色" style="width: 100%;">
@@ -244,8 +275,8 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.modifyDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="modifyDialogCommit">确 定</el-button>
+        <el-button @click="dialog.modifyDialogVisible = false" :loading="smdExtendParam.modifyLoading">取 消</el-button>
+        <el-button type="primary" @click="modifyDialogCommit" :loading="smdExtendParam.modifyLoading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【编辑】对话框 结束-->
@@ -254,11 +285,29 @@
     <el-dialog title="提示" :visible.sync="dialog.deleteDialogVisible" @close="closeDeleteDialog" width="30%">
       <span>确定删除该用户为「{{deleteParam.nickName}}」的用户？</span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog.deleteDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="deleteDialogCommit">确 定</el-button>
+        <el-button @click="dialog.deleteDialogVisible = false" :loading="deleteExtendParam.deleteLoading">取 消</el-button>
+        <el-button type="primary" @click="deleteDialogCommit" :loading="deleteExtendParam.deleteLoading">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 【删除】对话框 开始-->
+
+    <!-- 【批量删除】对话框 开始-->
+    <el-dialog title="确定删除？" :visible.sync="dialog.removeDialogVisible" @close="closeRemoveDialog" width="40%">
+      <el-table :data="removeParams" style="width: 100%;text-align: left;">
+        <el-table-column prop="nickName" label="昵称"></el-table-column>
+        <el-table-column prop="realName" label="姓名"></el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="channelRemove(scope.row)">取消</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialog.removeDialogVisible = false" :loading="deleteExtendParam.removeLoading">取 消</el-button>
+        <el-button type="primary" @click="removeDialogCommit" :loading="deleteExtendParam.removeLoading">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 【批量删除】对话框 开始-->
   </div>
 </template>
 
@@ -281,6 +330,9 @@ export default {
         realName: '',
         phone: ''
       },
+      searchExtendParam: {
+        loading: true
+      },
       smdParam: {
         id: '',
         code: '',
@@ -298,13 +350,20 @@ export default {
         createTime: ''
       },
       smdExtendParam: {
-        roles: []
+        roles: [],
+        saveLoading: false,
+        modifyLoading: false
       },
       deleteParam: {
         id: '',
         code: '',
         nickName: ''
       },
+      deleteExtendParam: {
+        deleteLoading: false,
+        removeLoading: false
+      },
+      removeParams:[],
       options: {
         province: [
           {value: '01',label: '北京'},
@@ -330,20 +389,25 @@ export default {
         tableData: [],
         recordsTotal: 0,
         currentPage: 0,
+        multipleSelection: []
       },
       dialog: {
         saveDialogVisible: false,
         modifyDialogVisible: false,
         detailDialogVisible: false,
         deleteDialogVisible: false,
+        removeDialogVisible: false
       }
     }
   },
   methods: {
     search(){
       var that = this;
-      var url = basePath + 'sysUser/page';
-      this.$http.post(url, that.searchParam).then((response) => {
+      this.$AJAX.POST(this, that.searchParam, 'sysUser/page', false,function () {
+        that.searchExtendParam.loading = true;
+      },function(){
+        that.searchExtendParam.loading = false;
+      },function(response){
         that.page.tableData = response.body.data.data;
         for(var i=0;i<that.page.tableData.length;i++){
           that.page.tableData[i].province = that.optionUtil(that.page.tableData[i].province, that.options.province);
@@ -351,8 +415,6 @@ export default {
           that.page.tableData[i].createTime = that.dateTimeUtil(that.page.tableData[i].createTime);
         }
         that.page.recordsTotal = response.body.data.recordsTotal;
-      }, (response) => {
-        console.log("err"+response);
       });
     },
     resetSearch(){
@@ -367,12 +429,13 @@ export default {
       if(that.smdExtendParam.roles){
         that.smdParam.roles = that.smdExtendParam.roles.join(',');
       }
-      var url = basePath + 'sysUser/save';
-      that.$http.post(url, that.smdParam).then((response) => {
+      that.$AJAX.POST(that, that.smdParam, 'sysUser/save', true, function () {
+        that.smdExtendParam.saveLoading = true;
+      },function(){
+        that.smdExtendParam.saveLoading = false;
+      },function(response){
         that.closeSaveDialog();
         that.search();
-      }, (response) => {
-        alert("fail");
       });
     },
     modifyDialogCommit(){
@@ -380,26 +443,44 @@ export default {
       if(that.smdExtendParam.roles){
         that.smdParam.roles = that.smdExtendParam.roles.join(',');
       }
-      var nickName = that.smdParam.nickName;
-      var url = basePath + 'sysUser/modify';
-      that.$http.put(url, that.smdParam).then((response) => {
+      that.$AJAX.PUT(this, that.smdParam, 'sysUser/modify', function () {
+        that.smdExtendParam.modifyLoading = true;
+      },function(){
+        that.smdExtendParam.modifyLoading = false;
+      },function(response){
         that.closeModifyDialog();
-        that.searchParam.nickName = nickName;
         that.search();
-      }, (response) => {
-        alert("fail");
       });
     },
     deleteDialogCommit(){
       var that = this;
-      var nickName = that.deleteParam.nickName;
-      var url = basePath + 'sysUser/delete?id=' + this.deleteParam.id;
-      that.$http.delete(url, []).then((response) => {
+      var uri = 'sysUser/delete?id=' + this.deleteParam.id;
+      that.$AJAX.DELETE(this, uri, function(){
+        that.deleteExtendParam.deleteLoading = true;
+      },function(){
+        that.deleteExtendParam.deleteLoading = false;
+      },function(response){
         that.closeDeleteDialog();
-        that.searchParam.nickName = nickName;
         that.search();
-      }, (response) => {
-        alert("fail");
+      });
+    },
+    removeDialogCommit(){
+      var that = this;
+      var ids = "";
+      for(var i=0;i<that.removeParams.length;i++){
+        ids += that.removeParams[i].id;
+        if(i<that.removeParams.length-1){
+          ids += ",";
+        }
+      }
+      var uri = 'sysUser/remove?ids=' + ids;
+      this.$AJAX.DELETE(this, uri, function(){
+        that.deleteExtendParam.removeLoading = true;
+      },function(){
+        that.deleteExtendParam.removeLoading = false;
+      },function(response){
+        that.closeRemoveDialog();
+        that.search();
       });
     },
     openSaveDialog(){
@@ -439,6 +520,27 @@ export default {
       this.deleteParam.code = '';
       this.deleteParam.nickName = '';
       this.dialog.deleteDialogVisible = false;
+    },
+    openRemoveDialog(){
+      var that = this;
+      if(this.page.multipleSelection && this.page.multipleSelection.length > 0){
+        for(var i=0;i<this.page.multipleSelection.length;i++){
+          var removeParam = {};
+          removeParam.id = this.page.multipleSelection[i].id;
+          removeParam.nickName = this.page.multipleSelection[i].nickName;
+          removeParam.realName = this.page.multipleSelection[i].realName;
+          that.removeParams.push(removeParam);
+        }
+        that.dialog.removeDialogVisible = true;
+      }else{
+        that.$message({message: '请勾选要删除的数据',type: 'warning'});
+      }
+    },
+    closeRemoveDialog(){
+      this.removeParams = [];
+      this.page.multipleSelection = [];
+      this.$refs.multipleTable.clearSelection();
+      this.dialog.removeDialogVisible = false;
     },
     pageSizeChange(val) {
       this.searchParam.start = 0;
@@ -519,10 +621,34 @@ export default {
     },
     dateTimeUtil(value){
       return new Date(value).format("yyyy-MM-dd hh:mm:ss");
+    },
+    handleSelectionChange(val) {
+      this.page.multipleSelection = val;
+    },
+    channelRemove(row){
+      var that = this;
+      for(var i=0;i<that.page.multipleSelection.length;i++){
+        if(that.page.multipleSelection[i].nickName == row.nickName){
+          that.page.multipleSelection.splice(i,1);
+        }
+      }
+      for(var i=0;i<that.removeParams.length;i++){
+        if(that.removeParams[i].nickName == row.nickName){
+          that.removeParams.splice(i,1);
+        }
+      }
+      if(that.removeParams.length == 0){
+        that.closeRemoveDialog();
+      }
+    },
+    downloadExcelModel(){
+      window.location.href = "../../static/excel/批量导入用户信息模板.xlsx";
     }
   },
   mounted: function () {
     this.search();
+  },
+  created: function () {
   }
 }
 </script>
@@ -540,5 +666,9 @@ export default {
   }
   .modify-head{
     text-align: left;font-weight: bolder;
+  }
+  .star{
+    text-align: right;
+    margin-top: 8px;
   }
 </style>
