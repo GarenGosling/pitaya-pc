@@ -15,13 +15,13 @@
       </el-col>
     </el-row>
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <el-button size="small" icon="el-icon-search" @click="search" :loading="searchExtendParam.loading">搜索</el-button>
-      <el-button size="small" icon="el-icon-refresh" @click="resetSearch" :loading="searchExtendParam.loading">重置</el-button>
-      <el-button type="primary" size="small" icon="el-icon-news" @click="openSaveDialog">新增</el-button>
-      <el-button type="success" size="small" icon="el-icon-download" @click="downloadExcelModel">模板</el-button>
-      <el-button type="info" size="small" icon="el-icon-upload2" @click="openImportDialog">导入</el-button>
-      <el-button type="warning" size="small" icon="el-icon-document" @click="exportExcel" :loading="exportExcelLoading">导出</el-button>
-      <el-button type="danger" size="small" icon="el-icon-document" @click="openRemoveDialog">删除</el-button>
+      <el-button size="small" icon="el-icon-search" @click="search" :loading="btnLoading">搜索</el-button>
+      <el-button size="small" icon="el-icon-refresh" @click="resetSearch" :loading="btnLoading">重置</el-button>
+      <el-button type="primary" size="small" icon="el-icon-news" @click="openSaveDialog" :loading="btnLoading">新增</el-button>
+      <el-button type="success" size="small" icon="el-icon-download" @click="downloadExcelModel" :loading="btnLoading">模板</el-button>
+      <el-button type="info" size="small" icon="el-icon-upload2" @click="openImportDialog" :loading="btnLoading">导入</el-button>
+      <el-button type="warning" size="small" icon="el-icon-document" @click="exportExcel" :loading="btnLoading">导出</el-button>
+      <el-button type="danger" size="small" icon="el-icon-document" @click="openRemoveDialog" :loading="btnLoading">删除</el-button>
     </el-row>
     <el-table
       ref="multipleTable"
@@ -140,8 +140,8 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.saveDialogVisible = false" :loading="smdExtendParam.saveLoading">取 消</el-button>
-        <el-button type="primary" @click="saveDialogCommit" :loading="smdExtendParam.saveLoading">确 定</el-button>
+        <el-button @click="dialog.saveDialogVisible = false" :loading="btnLoading">取 消</el-button>
+        <el-button type="primary" @click="saveDialogCommit" :loading="btnLoading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【新增】对话框 结束-->
@@ -275,8 +275,8 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.modifyDialogVisible = false" :loading="smdExtendParam.modifyLoading">取 消</el-button>
-        <el-button type="primary" @click="modifyDialogCommit" :loading="smdExtendParam.modifyLoading">确 定</el-button>
+        <el-button @click="dialog.modifyDialogVisible = false" :loading="btnLoading">取 消</el-button>
+        <el-button type="primary" @click="modifyDialogCommit" :loading="btnLoading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【编辑】对话框 结束-->
@@ -285,8 +285,8 @@
     <el-dialog title="提示" :visible.sync="dialog.deleteDialogVisible" @close="closeDeleteDialog" width="30%">
       <span>确定删除该用户为「{{deleteParam.nickName}}」的用户？</span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog.deleteDialogVisible = false" :loading="deleteExtendParam.deleteLoading">取 消</el-button>
-        <el-button type="primary" @click="deleteDialogCommit" :loading="deleteExtendParam.deleteLoading">确 定</el-button>
+        <el-button @click="dialog.deleteDialogVisible = false" :loading="btnLoading">取 消</el-button>
+        <el-button type="primary" @click="deleteDialogCommit" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 【删除】对话框 开始-->
@@ -303,8 +303,8 @@
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog.removeDialogVisible = false" :loading="deleteExtendParam.removeLoading">取 消</el-button>
-        <el-button type="primary" @click="removeDialogCommit" :loading="deleteExtendParam.removeLoading">确 定</el-button>
+        <el-button @click="dialog.removeDialogVisible = false" :loading="btnLoading">取 消</el-button>
+        <el-button type="primary" @click="removeDialogCommit" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 【批量删除】对话框 开始-->
@@ -326,8 +326,8 @@
         <div class="el-upload__tip" slot="tip">只能上传一个.xlsx格式的Excel文件，且不超过2M</div>
       </el-upload>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="closeImportDialog" :loading="importExtendParam.importLoading">取 消</el-button>
-        <el-button type="primary" @click="importDialogCommit" :loading="importExtendParam.importLoading">确 定</el-button>
+        <el-button @click="closeImportDialog" :loading="btnLoading">取 消</el-button>
+        <el-button type="primary" @click="importDialogCommit" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 【Excel导入用户信息】对话框 结束-->
@@ -340,7 +340,7 @@
         <el-table-column prop="message" label="失败原因"></el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="closeImportFailDialog">关 闭</el-button>
+        <el-button @click="closeImportFailDialog" :loading="btnLoading">关 闭</el-button>
       </span>
     </el-dialog>
     <!-- 【Excel导入用户信息，失败列表】对话框 结束-->
@@ -382,23 +382,11 @@ export default {
       },
       smdExtendParam: {
         roles: [],
-        saveLoading: false,
-        modifyLoading: false
       },
       deleteParam: {
         id: '',
         code: '',
         nickName: ''
-      },
-      deleteExtendParam: {
-        deleteLoading: false,
-        removeLoading: false
-      },
-      importParam: {
-
-      },
-      importExtendParam: {
-        importLoading: false,
       },
       removeParams:[],
       options: {
@@ -441,17 +429,13 @@ export default {
         action: basePath + 'sysUser/importExcel',
         failList: []
       },
-      exportExcelLoading: false
+      btnLoading: false
     }
   },
   methods: {
     search(){
       var that = this;
-      this.$AJAX.GET(this, 'sysUser/page', that.searchParam, function () {
-        that.searchExtendParam.loading = true;
-      },function(){
-        that.searchExtendParam.loading = false;
-      },function(response){
+      this.$AJAX.GET(this, 'sysUser/page', that.searchParam, function(response){
         that.page.tableData = response.body.data.data;
         for(var i=0;i<that.page.tableData.length;i++){
           that.page.tableData[i].province = that.optionUtil(that.page.tableData[i].province, that.options.province);
@@ -459,6 +443,7 @@ export default {
           that.page.tableData[i].createTime = that.dateTimeUtil(that.page.tableData[i].createTime);
         }
         that.page.recordsTotal = response.body.data.recordsTotal;
+        that.searchExtendParam.loading = false;
       });
     },
     resetSearch(){
@@ -473,11 +458,7 @@ export default {
       if(that.smdExtendParam.roles){
         that.smdParam.roles = that.smdExtendParam.roles.join(',');
       }
-      that.$AJAX.POST(that, that.smdParam, 'sysUser/save', true, function () {
-        that.smdExtendParam.saveLoading = true;
-      },function(){
-        that.smdExtendParam.saveLoading = false;
-      },function(response){
+      that.$AJAX.POST(that, that.smdParam, 'sysUser/save', true, function(response){
         that.closeSaveDialog();
         that.search();
       });
@@ -487,11 +468,7 @@ export default {
       if(that.smdExtendParam.roles){
         that.smdParam.roles = that.smdExtendParam.roles.join(',');
       }
-      that.$AJAX.PUT(this, that.smdParam, 'sysUser/modify', function () {
-        that.smdExtendParam.modifyLoading = true;
-      },function(){
-        that.smdExtendParam.modifyLoading = false;
-      },function(response){
+      that.$AJAX.PUT(this, that.smdParam, 'sysUser/modify', function(response){
         that.closeModifyDialog();
         that.search();
       });
@@ -499,11 +476,7 @@ export default {
     deleteDialogCommit(){
       var that = this;
       var uri = 'sysUser/delete?id=' + this.deleteParam.id;
-      that.$AJAX.DELETE(this, uri, function(){
-        that.deleteExtendParam.deleteLoading = true;
-      },function(){
-        that.deleteExtendParam.deleteLoading = false;
-      },function(response){
+      that.$AJAX.DELETE(this, uri, function(response){
         that.closeDeleteDialog();
         that.search();
       });
@@ -518,11 +491,7 @@ export default {
         }
       }
       var uri = 'sysUser/remove?ids=' + ids;
-      this.$AJAX.DELETE(this, uri, function(){
-        that.deleteExtendParam.removeLoading = true;
-      },function(){
-        that.deleteExtendParam.removeLoading = false;
-      },function(response){
+      this.$AJAX.DELETE(this, uri, function(response){
         that.closeRemoveDialog();
         that.search();
       });

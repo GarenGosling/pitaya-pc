@@ -50,8 +50,8 @@ var formatParam = function(realURL, params) {
  * @param success
  * @constructor
  */
-Vue.prototype.$AJAX.GET = function (vm, uri, params, loadTrueFn, loadFalseFn, success){
-  loadTrueFn();
+Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
+  vm.btnLoading = true;
   var url = formatParam(basePath + uri, params);
     vm.$http.get(url, []).then((response) => {
       if(response.body.code == 200){
@@ -59,10 +59,10 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, loadTrueFn, loadFalseFn, su
       }else{
         vm.$message.error(response.body.message)
       }
-      loadFalseFn();
+      vm.btnLoading = false;
     }, (response) => {
       vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-      loadFalseFn();
+      vm.btnLoading = false;
     });
 }
 
@@ -74,8 +74,8 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, loadTrueFn, loadFalseFn, su
  * @param successFn
  * @constructor
  */
-Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, loadTrueFn, loadFalseFn, successFn){
-  loadTrueFn();
+Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn){
+  vm.btnLoading = true;
   var url = basePath + uri;
   vm.$http.post(url, param).then((response) => {
     if(response.body.code == 200){
@@ -86,10 +86,10 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, loadTrueF
     }else{
       vm.$message.error(response.body.message)
     }
-    loadFalseFn();
+    vm.btnLoading = false;
   }, (response) => {
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-    loadFalseFn();
+    vm.btnLoading = false;
   });
 }
 
@@ -101,8 +101,8 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, loadTrueF
  * @param successFn
  * @constructor
  */
-Vue.prototype.$AJAX.PUT = function (vm, param, uri, loadTrueFn, loadFalseFn, successFn){
-  loadTrueFn();
+Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
+  vm.btnLoading = true;
   var url = basePath + uri;
   vm.$http.put(url, param).then((response) => {
     if(response.body.code == 200){
@@ -111,10 +111,10 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, loadTrueFn, loadFalseFn, suc
     }else{
       vm.$message.error(response.body.message)
     }
-    loadFalseFn();
+    vm.btnLoading = false;
   }, (response) => {
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-    loadFalseFn();
+    vm.btnLoading = false;
   });
 }
 
@@ -125,8 +125,8 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, loadTrueFn, loadFalseFn, suc
  * @param successFn
  * @constructor
  */
-Vue.prototype.$AJAX.DELETE = function (vm, uri, loadTrueFn, loadFalseFn, successFn){
-  loadTrueFn();
+Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
+  vm.btnLoading = true;
   var url = basePath + uri;
   vm.$http.delete(url, []).then((response) => {
     if(response.body.code == 200){
@@ -135,10 +135,10 @@ Vue.prototype.$AJAX.DELETE = function (vm, uri, loadTrueFn, loadFalseFn, success
     }else{
       vm.$message.error(response.body.message)
     }
-    loadFalseFn();
+    vm.btnLoading = false;
   }, (response) => {
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-    loadFalseFn();
+    vm.btnLoading = false;
   });
 }
 
