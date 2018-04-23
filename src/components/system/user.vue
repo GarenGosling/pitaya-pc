@@ -15,13 +15,27 @@
       </el-col>
     </el-row>
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <el-button size="small" icon="el-icon-search" @click="search" :loading="btnLoading">搜索</el-button>
-      <el-button size="small" icon="el-icon-refresh" @click="resetSearch" :loading="btnLoading">重置</el-button>
-      <el-button type="primary" size="small" icon="el-icon-news" @click="openSaveDialog" :loading="btnLoading">新增</el-button>
-      <el-button type="success" size="small" icon="el-icon-download" @click="downloadExcelModel" :loading="btnLoading">模板</el-button>
-      <el-button type="info" size="small" icon="el-icon-upload2" @click="openImportDialog" :loading="btnLoading">导入</el-button>
-      <el-button type="warning" size="small" icon="el-icon-document" @click="exportExcel" :loading="btnLoading">导出</el-button>
-      <el-button type="danger" size="small" icon="el-icon-document" @click="openRemoveDialog" :loading="btnLoading">删除</el-button>
+      <el-tooltip class="item" effect="dark" content="根据搜索条件组合查询，如果搜索条件都为空，则查询全部" placement="bottom">
+        <el-button size="small" icon="el-icon-search" @click="search" :loading="btnLoading">搜索</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="清空所有搜索条件，并刷新查询结果" placement="bottom">
+        <el-button size="small" icon="el-icon-refresh" @click="resetSearch" :loading="btnLoading">重置</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="打开弹窗，填写用户信息" placement="bottom">
+        <el-button type="primary" size="small" icon="el-icon-news" @click="openSaveDialog" :loading="btnLoading">新增</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="点击下载导入用户信息的excel模板" placement="bottom">
+        <el-button type="success" size="small" icon="el-icon-download" @click="downloadExcelModel" :loading="btnLoading">模板</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="打开弹窗，选择导入用户信息的Excel文件" placement="bottom">
+        <el-button type="info" size="small" icon="el-icon-upload2" @click="openImportDialog" :loading="btnLoading">导入</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="导出数据为根据搜索条件组合查询的结果集，点击“导出”，打开弹窗，输入从哪条数据开始导出" placement="bottom">
+        <el-button type="warning" size="small" icon="el-icon-document" @click="exportExcel" :loading="btnLoading">导出</el-button>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="批量删除，需要勾选表格行的多选框，打开弹窗，点击确认后执行批量删除操作" placement="bottom">
+        <el-button type="danger" size="small" icon="el-icon-document" @click="openRemoveDialog" :loading="btnLoading">删除</el-button>
+      </el-tooltip>
     </el-row>
     <el-table
       ref="multipleTable"
@@ -35,7 +49,7 @@
       <el-table-column fixed="left" label="操作" width="150">
         <template slot-scope="scope">
           <el-button @click="openDetailDialog(scope.row)" type="text" size="small">查看</el-button>
-          <el-button type="text" size="small" @click="openModifyDialog(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="openUpdateDialog(scope.row)">编辑</el-button>
           <el-button type="text" size="small" @click="openDeleteDialog(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -194,10 +208,10 @@
     <!-- 【查看】对话框 结束-->
 
     <!-- 【编辑】对话框 开始-->
-    <el-dialog title="编辑" :visible.sync="dialog.modifyDialogVisible" @close="closeModifyDialog">
+    <el-dialog title="编辑" :visible.sync="dialog.updateDialogVisible" @close="closeUpdateDialog">
       <el-row :gutter="20" class="detail-row">
-        <el-col :span="12" class="modify-head">ID：{{smdParam.code || '-'}}</el-col>
-        <el-col :span="12" class="modify-head">创建时间：{{smdParam.createTime || '-'}}</el-col>
+        <el-col :span="12" class="update-head">ID：{{smdParam.code || '-'}}</el-col>
+        <el-col :span="12" class="update-head">创建时间：{{smdParam.createTime || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="detail-row">
         <el-col :span="12">
@@ -275,8 +289,8 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.modifyDialogVisible = false" :loading="btnLoading">取 消</el-button>
-        <el-button type="primary" @click="modifyDialogCommit" :loading="btnLoading">确 定</el-button>
+        <el-button @click="dialog.updateDialogVisible = false" :loading="btnLoading">取 消</el-button>
+        <el-button type="primary" @click="updateDialogCommit" :loading="btnLoading">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 【编辑】对话框 结束-->
@@ -418,7 +432,7 @@ export default {
       },
       dialog: {
         saveDialogVisible: false,
-        modifyDialogVisible: false,
+        updateDialogVisible: false,
         detailDialogVisible: false,
         deleteDialogVisible: false,
         removeDialogVisible: false,
@@ -447,11 +461,14 @@ export default {
       });
     },
     resetSearch(){
+      this.resetSearchParam();
+      this.search();
+    },
+    resetSearchParam(){
       this.searchParam.code = '';
       this.searchParam.nickName = '';
       this.searchParam.realName = '';
       this.searchParam.phone = '';
-      this.search();
     },
     saveDialogCommit(){
       var that = this;
@@ -463,13 +480,13 @@ export default {
         that.search();
       });
     },
-    modifyDialogCommit(){
+    updateDialogCommit(){
       var that = this;
       if(that.smdExtendParam.roles){
         that.smdParam.roles = that.smdExtendParam.roles.join(',');
       }
-      that.$AJAX.PUT(this, that.smdParam, 'sysUser/modify', function(response){
-        that.closeModifyDialog();
+      that.$AJAX.PUT(this, that.smdParam, 'sysUser/update', function(response){
+        that.closeUpdateDialog();
         that.search();
       });
     },
@@ -497,7 +514,9 @@ export default {
       });
     },
     importDialogCommit(){
+      this.btnLoading = true;
       this.$refs.importExcel.submit();
+      this.btnLoading = false;
     },
     openSaveDialog(){
       this.dialog.saveDialogVisible = true
@@ -506,16 +525,16 @@ export default {
       this.cleanSmdDialog();
       this.dialog.saveDialogVisible =false;
     },
-    openModifyDialog(row){
+    openUpdateDialog(row){
       this.setSmdDialog(row);
       if(row.roles){
         this.smdExtendParam.roles = row.roles.split(',');
       }
-      this.dialog.modifyDialogVisible = true
+      this.dialog.updateDialogVisible = true
     },
-    closeModifyDialog(){
+    closeUpdateDialog(){
       this.cleanSmdDialog();
-      this.dialog.modifyDialogVisible =false;
+      this.dialog.updateDialogVisible =false;
     },
     openDetailDialog(row) {
       this.setSmdDialog(row);
@@ -571,7 +590,7 @@ export default {
     closeImportFailDialog(){
       this.importExcel.failList = [];
       this.dialog.importFailDialogVisible = false;
-      search();
+      this.search();
     },
     pageSizeChange(val) {
       this.searchParam.start = 0;
@@ -683,21 +702,47 @@ export default {
       return isLt2M;
     },
     importExcelSuccess(response, file, fileList){
-      console.log(response.data.failList);
-      this.importExcel.failList = response.data.failList;
-      this.closeImportDialog();
-      if(this.importExcel.failList.length > 0){
-        this.openImportFailDialog();
+      if(response.code == 200){
+        this.importExcel.failList = response.data.failList;
+        this.closeImportDialog();
+        if(this.importExcel.failList.length > 0){
+          this.openImportFailDialog();
+        }else{
+          this.$message({message: '导入成功', type: 'success'});
+          this.search();
+        }
       }else{
-        this.$message({message: '导入成功', type: 'success'});
-        this.search();
+        this.$message.error(response.message);
       }
     },
     importExcelFail(err, file, fileList){
       this.$message.error(err.message);
     },
     exportExcel(){
-      window.location.href = this.$AJAX.formatParam(basePath + "sysUser/exportExcel", this.searchParam);
+      this.$prompt('请输入从哪条数据开始导出，默认最大导出10000条数据（如：输入1或0，则导出1~10000条数据，如果不足10000条，则导出全部数据）', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /\d+$/,
+        inputErrorMessage: '请输入数字'
+      }).then(({ value }) => {
+        this.$message({
+          type: 'success',
+          message: '正在导出从' + value + '开始的10000条数据，请稍后！'
+        });
+        var start = value - 1;
+        if(start < 0){
+          start = 0;
+        }
+        this.searchParam.start = start;
+        window.location.href = this.$AJAX.formatParam(basePath + "sysUser/exportExcel", this.searchParam);
+        this.resetSearchParam();
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消导出'
+        });
+      });
+
     }
   },
   mounted: function () {
@@ -719,7 +764,7 @@ export default {
   .detail-content{
     text-align: left;
   }
-  .modify-head{
+  .update-head{
     text-align: left;font-weight: bolder;
   }
   .star{

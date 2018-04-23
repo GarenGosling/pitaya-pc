@@ -55,9 +55,10 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
   var url = formatParam(basePath + uri, params);
     vm.$http.get(url, []).then((response) => {
       if(response.body.code == 200){
+        vm.$message.success(response.body.message);
         success(response);
       }else{
-        vm.$message.error(response.body.message)
+        vm.$message.error(response.body.message);
       }
       vm.btnLoading = false;
     }, (response) => {
@@ -79,9 +80,7 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn
   var url = basePath + uri;
   vm.$http.post(url, param).then((response) => {
     if(response.body.code == 200){
-      if(isShowSuccessMsg){
-        vm.$message.success(response.body.message);
-      }
+      vm.$message.success(response.body.message);
       successFn(response);
     }else{
       vm.$message.error(response.body.message)
