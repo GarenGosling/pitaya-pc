@@ -461,14 +461,11 @@ export default {
       });
     },
     resetSearch(){
-      this.resetSearchParam();
-      this.search();
-    },
-    resetSearchParam(){
       this.searchParam.code = '';
       this.searchParam.nickName = '';
       this.searchParam.realName = '';
       this.searchParam.phone = '';
+      this.search();
     },
     saveDialogCommit(){
       var that = this;
@@ -516,7 +513,6 @@ export default {
     importDialogCommit(){
       this.btnLoading = true;
       this.$refs.importExcel.submit();
-      this.btnLoading = false;
     },
     openSaveDialog(){
       this.dialog.saveDialogVisible = true
@@ -714,9 +710,11 @@ export default {
       }else{
         this.$message.error(response.message);
       }
+      this.btnLoading = false;
     },
     importExcelFail(err, file, fileList){
       this.$message.error(err.message);
+      this.btnLoading = false;
     },
     exportExcel(){
       this.$prompt('请输入从哪条数据开始导出，默认最大导出10000条数据（如：输入1或0，则导出1~10000条数据，如果不足10000条，则导出全部数据）', '提示', {
@@ -733,9 +731,10 @@ export default {
         if(start < 0){
           start = 0;
         }
+        var startOld = this.searchParam.start;
         this.searchParam.start = start;
         window.location.href = this.$AJAX.formatParam(basePath + "sysUser/exportExcel", this.searchParam);
-        this.resetSearchParam();
+        this.searchParam.start = startOld;
       }).catch(() => {
         this.$message({
           type: 'info',
