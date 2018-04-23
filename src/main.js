@@ -19,6 +19,30 @@ Vue.use(VueResource);
  */
 Vue.prototype.$AJAX = {};
 
+Vue.prototype.$AJAX.formatParam = function(realURL, params) {
+  return formatParam(realURL, params);
+};
+
+var formatParam = function(realURL, params) {
+  if (typeof(params) === 'string') {
+    params=JSON.parse(params);
+  }
+  if (typeof(params) == "object") {
+    var paramArray = [];
+    for (var key in params) {
+      paramArray.push(key + "=" + params[key])
+    }
+
+    if (realURL.indexOf("?") > -1) {
+      realURL += "&" + paramArray.join("&");
+    } else {
+      realURL += "?" + paramArray.join("&");
+    }
+  }
+
+  return realURL;
+}
+
 /**
  * my vue-resource put request
  * @param vm
@@ -26,16 +50,19 @@ Vue.prototype.$AJAX = {};
  * @param success
  * @constructor
  */
-Vue.prototype.$AJAX.GET = function (vm, uri, success){
-  var url = basePath + uri;
+Vue.prototype.$AJAX.GET = function (vm, uri, params, loadTrueFn, loadFalseFn, success){
+  loadTrueFn();
+  var url = formatParam(basePath + uri, params);
     vm.$http.get(url, []).then((response) => {
       if(response.body.code == 200){
         success(response);
       }else{
         vm.$message.error(response.body.message)
       }
+      loadFalseFn();
     }, (response) => {
       vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
+      loadFalseFn();
     });
 }
 

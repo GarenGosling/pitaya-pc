@@ -48,7 +48,7 @@
       <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
       <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="150"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
     </el-table>
     <div class="block" style="margin-top: 10px;">
       <el-pagination
@@ -447,7 +447,7 @@ export default {
   methods: {
     search(){
       var that = this;
-      this.$AJAX.POST(this, that.searchParam, 'sysUser/page', false,function () {
+      this.$AJAX.GET(this, 'sysUser/page', that.searchParam, function () {
         that.searchExtendParam.loading = true;
       },function(){
         that.searchExtendParam.loading = false;
@@ -602,6 +602,7 @@ export default {
     closeImportFailDialog(){
       this.importExcel.failList = [];
       this.dialog.importFailDialogVisible = false;
+      search();
     },
     pageSizeChange(val) {
       this.searchParam.start = 0;
@@ -716,19 +717,18 @@ export default {
       console.log(response.data.failList);
       this.importExcel.failList = response.data.failList;
       this.closeImportDialog();
-      this.openImportFailDialog();
+      if(this.importExcel.failList.length > 0){
+        this.openImportFailDialog();
+      }else{
+        this.$message({message: '导入成功', type: 'success'});
+        this.search();
+      }
     },
     importExcelFail(err, file, fileList){
       this.$message.error(err.message);
     },
     exportExcel(){
-      var that = this;
-      var url = basePath + "sysUser/exportExcel" +
-        "?code=" + this.searchParam.code +
-        "&nickName=" + this.searchParam.nickName +
-        "&realName=" + this.searchParam.realName +
-        "&phone=" + this.searchParam.phone;
-      window.location.href = url;
+      window.location.href = this.$AJAX.formatParam(basePath + "sysUser/exportExcel", this.searchParam);
     }
   },
   mounted: function () {
