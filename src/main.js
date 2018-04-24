@@ -52,6 +52,7 @@ var formatParam = function(realURL, params) {
  */
 Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
   vm.btnLoading = true;
+  vm.tabLoading = true;
   var url = formatParam(basePath + uri, params);
     vm.$http.get(url, []).then((response) => {
       if(response.body.code == 200){
@@ -60,10 +61,12 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
       }else{
         vm.$message.error(response.body.message);
       }
+      vm.tabLoading = false;
       vm.btnLoading = false;
     }, (response) => {
       vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
       vm.btnLoading = false;
+      vm.tabLoading = false;
     });
 }
 
@@ -76,7 +79,7 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
  * @constructor
  */
 Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn){
-  vm.btnLoading = true;
+  vm.winBtnLoading = true;
   var url = basePath + uri;
   vm.$http.post(url, param).then((response) => {
     if(response.body.code == 200){
@@ -85,10 +88,10 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn
     }else{
       vm.$message.error(response.body.message)
     }
-    vm.btnLoading = false;
+    vm.winBtnLoading = false;
   }, (response) => {
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-    vm.btnLoading = false;
+    vm.winBtnLoading = false;
   });
 }
 
@@ -101,7 +104,7 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn
  * @constructor
  */
 Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
-  vm.btnLoading = true;
+  vm.winBtnLoading = true;
   var url = basePath + uri;
   vm.$http.put(url, param).then((response) => {
     if(response.body.code == 200){
@@ -110,10 +113,10 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
     }else{
       vm.$message.error(response.body.message)
     }
-    vm.btnLoading = false;
+    vm.winBtnLoading = false;
   }, (response) => {
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-    vm.btnLoading = false;
+    vm.winBtnLoading = false;
   });
 }
 
@@ -125,7 +128,7 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
  * @constructor
  */
 Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
-  vm.btnLoading = true;
+  vm.winBtnLoading = true;
   var url = basePath + uri;
   vm.$http.delete(url, []).then((response) => {
     if(response.body.code == 200){
@@ -134,11 +137,24 @@ Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
     }else{
       vm.$message.error(response.body.message)
     }
-    vm.btnLoading = false;
+    vm.winBtnLoading = false;
   }, (response) => {
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-    vm.btnLoading = false;
+    vm.winBtnLoading = false;
   });
+}
+
+Vue.prototype.$OPTIONS = function(value, options){
+  if(!options){
+    return "";
+  }
+  for(var i=0;i<options.length;i++){
+    var option = options[i];
+    if(option.value == value){
+      var label = option.label;
+      return label;
+    }
+  }
 }
 
 /* eslint-disable no-new */
