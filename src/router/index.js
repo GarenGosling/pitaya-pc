@@ -13,7 +13,7 @@ import dictionary from '@/components/system/dictionary'
 import log from '@/components/system/log'
 import permission from '@/components/system/permission'
 import role from '@/components/system/role'
-import user from '@/components/system/sys_user/user'
+import user from '@/components/system/sys_user/search'
 
 Vue.use(Router)
 

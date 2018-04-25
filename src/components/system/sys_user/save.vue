@@ -94,7 +94,7 @@
 
   export default {
     name: 'my-save',
-    props: ['btnLoading'],
+    props: ['btnLoading', 'options'],
     data () {
       return {
         winBtnLoading: false,

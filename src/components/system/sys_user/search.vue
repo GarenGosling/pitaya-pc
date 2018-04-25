@@ -36,7 +36,7 @@
       stripe
       v-loading="tabLoading"
       style="width: 100%;margin-top: 10px;text-align: left;" height="calc(100vh - 380px)"
-      @selection-change="_handleSelectionChange">
+      @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" fixed></el-table-column>
       <el-table-column type="index" width="50" fixed></el-table-column>
       <el-table-column fixed="left" label="操作" width="150">
@@ -50,12 +50,12 @@
       <el-table-column prop="realName" label="姓名" width="100" fixed></el-table-column>
       <el-table-column prop="phone" label="手机号"  width="110"></el-table-column>
       <el-table-column prop="idNumber" label="身份证号"  width="180"></el-table-column>
-      <el-table-column prop="province" label="省份"  width="120"></el-table-column>
-      <el-table-column prop="city" label="城市"  width="120"></el-table-column>
+      <el-table-column prop="province" label="省份" :formatter="provinceFormatter" width="120"></el-table-column>
+      <el-table-column prop="city" label="城市" :formatter="cityFormatter" width="120"></el-table-column>
       <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
       <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="180" :formatter="createTimeFormatter"></el-table-column>
     </el-table>
     <!-- 表格 结束-->
 
@@ -83,9 +83,9 @@ import MyExport from "@/components/common/my-export"
 import MyModel from '@/components/common/my-model'
 import MyImport from "@/components/common/my-import"
 import MyRemove from "@/components/common/my-remove"
-import MySave from '@/components/system/sys_user/my-save'
-import MyDetail from "@/components/system/sys_user/my-detail"
-import MyUpdate from "@/components/system/sys_user/my-update"
+import MySave from '@/components/system/sys_user/save'
+import MyUpdate from "@/components/system/sys_user/update"
+import MyDetail from "@/components/system/sys_user/detail"
 
 export default {
   name: 'Index',
@@ -139,11 +139,6 @@ export default {
       var that = this;
       this.$AJAX.GET(this, 'sysUser/page', that.searchParam, function(response){
         that.page.tableData = response.body.data.data;
-        for(var i=0;i<that.page.tableData.length;i++){
-          that.page.tableData[i].province = that.$OPTIONS(that.page.tableData[i].province, that.options.province);
-          that.page.tableData[i].city = that.$OPTIONS(that.page.tableData[i].city, that.options.city);
-          that.page.tableData[i].createTime = that.dateTimeUtil(that.page.tableData[i].createTime);
-        }
         that.page.recordsTotal = response.body.data.recordsTotal;
       });
     },
@@ -154,6 +149,15 @@ export default {
       this.searchParam.phone = '';
       this.search();
     },
+    provinceFormatter(row, column){
+      return this.$OPTIONS(row.province, this.options.province);
+    },
+    cityFormatter(row, column){
+      return this.$OPTIONS(row.city, this.options.city);
+    },
+    createTimeFormatter(row, column){
+      return new Date(row.createTime).format("yyyy-MM-dd hh:mm:ss");
+    },
     pageSizeChange(val) {
       this.searchParam.start = 0;
       this.searchParam.length = val;
@@ -163,32 +167,16 @@ export default {
       this.searchParam.start = (val-1)*this.searchParam.length;
       this.search();
     },
-    dateTimeUtil(value){
-      return new Date(value).format("yyyy-MM-dd hh:mm:ss");
-    },
-    // 这个方法固定这样写就行
-    _handleSelectionChange(val) {
+    handleSelectionChange(val) {
       if(val && val.length > 0){
         for(var i=0;i<val.length;i++){
           var obj = val[i];
           var dist = {};
           dist.id = obj.id;
-          var tmp = this.removeShow(obj);
-          dist.arg1 = tmp.arg1;
-          dist.arg2 = tmp.arg2;
+          dist.arg1 = obj.nickName;
+          dist.arg2 = obj.realName
           this.page.multipleSelection.push(dist);
         }
-      }
-    },
-    /**
-     * 批量删除展示2列数据，可以在这里配置
-     * @param obj
-     * @returns {{arg1: (string|*), arg2: (string|*)}}
-     */
-    removeShow(obj){
-      return {
-        arg1: obj.nickName,
-        arg2: obj.realName
       }
     }
   },
