@@ -215,7 +215,7 @@ export default {
       this.smdParam.roles = '';
       this.smdParam.createTime = '';
       this.smdParamExtend.roles = [];
-    },
+    }
   },
   mounted: function () {
     this.search();

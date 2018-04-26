@@ -92,7 +92,7 @@
 <script>
   export default {
     name: 'update',
-    props: ['btnLoading', 'rowData', 'smdParam', 'fn'],
+    props: ['rowData', 'smdParam', 'fn'],
     data () {
       return {
         winBtnLoading: false,

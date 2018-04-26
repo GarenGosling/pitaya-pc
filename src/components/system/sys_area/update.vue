@@ -3,77 +3,29 @@
     <el-button @click="open()" type="text" size="small">编辑</el-button>
     <el-dialog title="编辑" :visible.sync="visible" @close="close" append-to-body>
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12" class="my-head-right">ID：{{smdParam.code || '-'}}</el-col>
-        <el-col :span="12" class="my-head-right">创建时间：{{smdParam.createTime || '-'}}</el-col>
+        <el-col :span="24">
+          <el-col :span="12" class="my-head-right">ID：{{smdParam.id || '-'}}</el-col>
+        </el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="用户名" v-model="smdParam.nickName">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="姓名" v-model="smdParam.realName">
+        <el-col :span="24">
+          <el-input placeholder="上级ID" v-model="smdParam.parentId">
             <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
           </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="手机号" v-model="smdParam.phone">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="身份证号" v-model="smdParam.idNumber">
+        <el-col :span="24">
+          <el-input placeholder="名称" v-model="smdParam.name">
             <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
           </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-select v-model="smdParam.province" filterable placeholder="省份" style="width: 100%;">
+        <el-col :span="24">
+          <el-select v-model="smdParam.type" filterable placeholder="类型" style="width: 100%;">
             <el-option
-              v-for="item in options.province"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="12">
-          <el-select v-model="smdParam.city" filterable placeholder="城市" style="width: 100%;">
-            <el-option
-              v-for="item in options.city"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="微信号" v-model="smdParam.wechat">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="QQ号" v-model="smdParam.qq">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" style="margin-top: 10px;">
-        <el-col :span="12">
-          <el-input placeholder="邮箱" v-model="smdParam.email">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-select v-model="smdParamExtend.roles" filterable multiple placeholder="角色" style="width: 100%;">
-            <el-option
-              v-for="item in options.roles"
+              v-for="item in options.type"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -92,35 +44,11 @@
 <script>
   export default {
     name: 'update',
-    props: ['btnLoading', 'rowData', 'smdParam', 'fn'],
+    props: ['rowData', 'options', 'smdParam', 'fn'],
     data () {
       return {
         winBtnLoading: false,
         visible: false,
-        options: {
-          province: [
-            {value: '01',label: '北京'},
-            {value: '02',label: '上海'},
-            {value: '03',label: '河北'},
-            {value: '04',label: '黑龙江'},
-          ],
-          city: [
-            {value: '01',label: '通州'},
-            {value: '02',label: '朝阳'},
-            {value: '03',label: '丰台'},
-            {value: '04',label: '海淀'},
-          ],
-          roles: [
-            {value: 'AAA',label: '超级管理员'},
-            {value: 'BBB',label: '公司管理员'},
-            {value: 'CCC',label: '业务管理员'},
-            {value: 'DDD',label: '系统管理员'},
-            {value: 'EEE',label: '报表管理员'},
-          ]
-        },
-        smdParamExtend: {
-          roles: [],
-        },
       }
     },
     methods: {
@@ -137,25 +65,12 @@
       },
       setSmd(row){
         this.smdParam.id = row.id;
-        this.smdParam.code = row.code;
-        this.smdParam.nickName = row.nickName;
-        this.smdParam.realName = row.realName;
-        this.smdParam.password = row.password;
-        this.smdParam.phone = row.phone;
-        this.smdParam.idNumber = row.idNumber;
-        this.smdParam.province = row.province;
-        this.smdParam.city = row.city;
-        this.smdParam.wechat = row.wechat;
-        this.smdParam.qq = row.qq;
-        this.smdParam.email = row.email;
-        this.smdParam.roles = row.roles;
-        this.smdParam.createTime = row.createTime;
+        this.smdParam.parentId = row.parentId;
+        this.smdParam.name = row.name;
+        this.smdParam.type = row.type;
       },
       commit(){
         var that = this;
-        if(that.smdParamExtend.roles){
-          that.smdParam.roles = that.smdParamExtend.roles.join(',');
-        }
         that.$AJAX.PUT(this, that.smdParam, this.fn + '/update', function(response){
           that.close();
           that.$emit('search');

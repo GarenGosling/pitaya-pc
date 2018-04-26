@@ -3,75 +3,26 @@
     <el-tooltip class="item" effect="dark" content="打开弹窗，填写用户信息" placement="bottom">
       <el-button type="primary" size="small" icon="el-icon-news" @click="open" :loading="btnLoading">新增</el-button>
     </el-tooltip>
-    <el-dialog title="新增" :visible.sync="visible" @close="close">
+    <el-dialog title="新增" :visible.sync="visible" @close="close" width="20%">
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="用户名" v-model="smdParam.nickName">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="姓名（必填）" v-model="smdParam.realName">
+        <el-col :span="24">
+          <el-input placeholder="上级ID" v-model="smdParam.parentId">
             <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
           </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="手机号（必填）" v-model="smdParam.phone">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="身份证号" v-model="smdParam.idNumber">
+        <el-col :span="24">
+          <el-input placeholder="名称" v-model="smdParam.name">
             <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
           </el-input>
         </el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-select v-model="smdParam.province" filterable placeholder="省份" style="width: 100%;">
+        <el-col :span="24">
+          <el-select v-model="smdParam.type" filterable placeholder="类型" style="width: 100%;">
             <el-option
-              v-for="item in options.province"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col :span="12">
-          <el-select v-model="smdParam.city" filterable placeholder="城市" style="width: 100%;">
-            <el-option
-              v-for="item in options.city"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="微信号" v-model="smdParam.wechat">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-input placeholder="QQ号" v-model="smdParam.qq">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" class="my-row">
-        <el-col :span="12">
-          <el-input placeholder="邮箱" v-model="smdParam.email">
-            <i slot="suffix" class="el-input__icon el-icon-edit-outline"></i>
-          </el-input>
-        </el-col>
-        <el-col :span="12">
-          <el-select v-model="smdParamExtend.roles" filterable multiple placeholder="角色" style="width: 100%;">
-            <el-option
-              v-for="item in options.roles"
+              v-for="item in options.type"
               :key="item.value"
               :label="item.label"
               :value="item.value">

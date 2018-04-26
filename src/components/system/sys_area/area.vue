@@ -3,7 +3,10 @@
     <!-- 搜索条件 开始 -->
     <el-row :gutter="20">
       <el-col :span="6">
-        <el-input placeholder="上级ID" prefix-icon="el-icon-search" v-model="searchParam.code"/>
+        <el-input placeholder="ID" prefix-icon="el-icon-search" v-model="searchParam.id"/>
+      </el-col>
+      <el-col :span="6">
+        <el-input placeholder="上级ID" prefix-icon="el-icon-search" v-model="searchParam.parentId"/>
       </el-col>
       <el-col :span="6">
         <el-input placeholder="名称" prefix-icon="el-icon-search" v-model="searchParam.name"/>
@@ -46,17 +49,16 @@
       <el-table-column type="index" width="50" fixed></el-table-column>
       <el-table-column fixed="left" label="操作" width="150">
         <template slot-scope="scope">
-          <detail :rowData="scope.row" :smdParam="smdParam" @cleanSmd="cleanSmd"></detail>
-          <update :rowData="scope.row" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
+          <update :rowData="scope.row" :options="options" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
           <my-delete text="名称" :value="scope.row.name" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="ID" width="150" fixed></el-table-column>
+      <el-table-column prop="id" label="ID" width="100" fixed></el-table-column>
       <el-table-column prop="parentId" label="上级ID" width="100" fixed></el-table-column>
-      <el-table-column prop="name" label="名称"  width="150"></el-table-column>
-      <el-table-column prop="fullname" label="全名称"  width="250"></el-table-column>
-      <el-table-column prop="fullpath" label="全路径" width="250"></el-table-column>
-      <el-table-column prop="type" label="类型" width="120"></el-table-column>
+      <el-table-column prop="name" label="名称"  width="100"></el-table-column>
+      <el-table-column prop="type" label="类型" width="100"></el-table-column>
+      <el-table-column prop="fullname" label="全名称"  width="350"></el-table-column>
+      <el-table-column prop="fullpath" label="全路径" width="350"></el-table-column>
     </el-table>
     <!-- 表格 结束-->
 
@@ -84,15 +86,14 @@ import MyExport from '@/components/common/my-export'
 import MyModel from '@/components/common/my-model'
 import MyImport from '@/components/common/my-import'
 import MyRemove from '@/components/common/my-remove'
-import Save from '@/components/system/sys_user/save'
-import Update from '@/components/system/sys_user/update'
-import Detail from '@/components/system/sys_user/detail'
+import Save from '@/components/system/sys_area/save'
+import Update from '@/components/system/sys_area/update'
 
 export default {
   name: 'Index',
   components: {
     MySearch,MyReset,MyModel,MyImport,MyExport,MyDelete,MyRemove,
-    Save,Update,Detail
+    Save,Update
   },
   data () {
     return {
@@ -100,58 +101,26 @@ export default {
       searchParam: {
         start: 0,
         length: 5,
-        code: '',
-        nickName: '',
-        realName: '',
-        phone: ''
-      },
-      searchParamExtend: {
-        province: '',
-        city: ''
+        id: '',
+        parentId: '',
+        name: '',
+        type: ''
       },
       smdParam: {
         id: '',
-        code: '',
-        nickName: '',
-        realName: '',
-        password: '',
-        phone: '',
-        idNumber: '',
-        province: '',
-        city: '',
-        wechat: '',
-        qq: '',
-        email: '',
-        roles: '',
-        createTime: ''
+        parentId: '',
+        name: '',
+        fullname: '',
+        fullpath: '',
+        type: ''
       },
       smdParamExtend: {
-        roles: [],
       },
       options: {
         type: [
           {value: '省份', label: '省份'},
           {value: '城市', label: '城市'},
           {value: '区县', label: '区县'}
-        ],
-        province: [
-          {value: '01',label: '北京'},
-          {value: '02',label: '上海'},
-          {value: '03',label: '河北'},
-          {value: '04',label: '黑龙江'},
-        ],
-        city: [
-          {value: '01',label: '通州'},
-          {value: '02',label: '朝阳'},
-          {value: '03',label: '丰台'},
-          {value: '04',label: '海淀'},
-        ],
-        roles: [
-          {value: 'AAA',label: '超级管理员'},
-          {value: 'BBB',label: '公司管理员'},
-          {value: 'CCC',label: '业务管理员'},
-          {value: 'DDD',label: '系统管理员'},
-          {value: 'EEE',label: '报表管理员'},
         ]
       },
       page: {
@@ -173,10 +142,9 @@ export default {
       });
     },
     reset(){
-      this.searchParam.code = '';
-      this.searchParam.nickName = '';
-      this.searchParam.realName = '';
-      this.searchParam.phone = '';
+      this.searchParam.parentId = '';
+      this.searchParam.name = '';
+      this.searchParam.type = '';
       this.search();
     },
     pageSizeChange(val) {
@@ -194,38 +162,20 @@ export default {
           var obj = val[i];
           var dist = {};
           dist.id = obj.id;
-          dist.arg1 = obj.nickName;
-          dist.arg2 = obj.realName
+          dist.arg1 = obj.fullname;
+          dist.arg2 = obj.type
           this.page.selection.push(dist);
         }
       }
     },
-    provinceFmt(row, column){
-      return this.$OPTIONS(row.province, this.options.province);
-    },
-    cityFmt(row, column){
-      return this.$OPTIONS(row.city, this.options.city);
-    },
-    createTimeFmt(row, column){
-      return new Date(row.createTime).format("yyyy-MM-dd hh:mm:ss");
-    },
     cleanSmd(){
       this.smdParam.id = '';
-      this.smdParam.code = '';
-      this.smdParam.nickName = '';
-      this.smdParam.realName = '';
-      this.smdParam.password = '';
-      this.smdParam.phone = '';
-      this.smdParam.idNumber = '';
-      this.smdParam.province = '';
-      this.smdParam.city = '';
-      this.smdParam.wechat = '';
-      this.smdParam.qq = '';
-      this.smdParam.email = '';
-      this.smdParam.roles = '';
-      this.smdParam.createTime = '';
-      this.smdParamExtend.roles = [];
-    },
+      this.smdParam.parentId = '';
+      this.smdParam.name = '';
+      this.smdParam.fullname = '';
+      this.smdParam.fullpath = '';
+      this.smdParam.type = '';
+    }
   },
   mounted: function () {
     this.search();
