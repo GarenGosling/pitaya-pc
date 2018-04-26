@@ -3,17 +3,22 @@
     <!-- 搜索条件 开始 -->
     <el-row :gutter="20">
       <el-col :span="6">
-        <el-input placeholder="ID" prefix-icon="el-icon-search" v-model="searchParam.code"/>
+        <el-input placeholder="上级ID" prefix-icon="el-icon-search" v-model="searchParam.code"/>
       </el-col>
       <el-col :span="6">
-        <el-input placeholder="用户名" prefix-icon="el-icon-search" v-model="searchParam.nickName"/>
+        <el-input placeholder="名称" prefix-icon="el-icon-search" v-model="searchParam.name"/>
       </el-col>
       <el-col :span="6">
-        <el-input placeholder="姓名" prefix-icon="el-icon-search" v-model="searchParam.realName"/>
+        <el-select v-model="searchParam.type" filterable placeholder="类型" style="width: 100%;">
+          <el-option
+            v-for="item in options.type"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-col>
-      <el-col :span="6">
-        <el-input placeholder="手机号" prefix-icon="el-icon-search" v-model="searchParam.phone"/>
-      </el-col>
+      <el-col :span="6"></el-col>
     </el-row>
     <!-- 搜索条件 结束 -->
 
@@ -43,19 +48,15 @@
         <template slot-scope="scope">
           <detail :rowData="scope.row" :smdParam="smdParam" @cleanSmd="cleanSmd"></detail>
           <update :rowData="scope.row" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
-          <my-delete text="用户名" :value="scope.row.nickName" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
+          <my-delete text="名称" :value="scope.row.name" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
         </template>
       </el-table-column>
-      <el-table-column prop="nickName" label="用户名" width="150" fixed></el-table-column>
-      <el-table-column prop="realName" label="姓名" width="100" fixed></el-table-column>
-      <el-table-column prop="phone" label="手机号"  width="110"></el-table-column>
-      <el-table-column prop="idNumber" label="身份证号"  width="180"></el-table-column>
-      <el-table-column prop="province" label="省份" :formatter="provinceFmt" width="120"></el-table-column>
-      <el-table-column prop="city" label="城市" :formatter="cityFmt" width="120"></el-table-column>
-      <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
-      <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
-      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180" :formatter="createTimeFmt"></el-table-column>
+      <el-table-column prop="id" label="ID" width="150" fixed></el-table-column>
+      <el-table-column prop="parentId" label="上级ID" width="100" fixed></el-table-column>
+      <el-table-column prop="name" label="名称"  width="150"></el-table-column>
+      <el-table-column prop="fullname" label="全名称"  width="250"></el-table-column>
+      <el-table-column prop="fullpath" label="全路径" width="250"></el-table-column>
+      <el-table-column prop="type" label="类型" width="120"></el-table-column>
     </el-table>
     <!-- 表格 结束-->
 
@@ -95,7 +96,7 @@ export default {
   },
   data () {
     return {
-      fn: 'sysUser',
+      fn: 'sysArea',
       searchParam: {
         start: 0,
         length: 5,
@@ -103,6 +104,10 @@ export default {
         nickName: '',
         realName: '',
         phone: ''
+      },
+      searchParamExtend: {
+        province: '',
+        city: ''
       },
       smdParam: {
         id: '',
@@ -124,6 +129,11 @@ export default {
         roles: [],
       },
       options: {
+        type: [
+          {value: '省份', label: '省份'},
+          {value: '城市', label: '城市'},
+          {value: '区县', label: '区县'}
+        ],
         province: [
           {value: '01',label: '北京'},
           {value: '02',label: '上海'},
