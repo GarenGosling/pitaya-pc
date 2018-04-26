@@ -1,9 +1,7 @@
 <template>
   <div class="text-component-div">
-    <el-button @click="openDetailDialog()" type="text" size="small">查看</el-button>
-
-    <!-- 【查看】对话框 开始-->
-    <el-dialog title="查看" :visible.sync="dialog.detailDialogVisible" width="60%" @close="closeDetailDialog" append-to-body>
+    <el-button @click="open()" type="text" size="small">查看</el-button>
+    <el-dialog title="查看" :visible.sync="visible" width="60%" @close="close" append-to-body>
       <el-row :gutter="20" class="my-row">
         <el-col :span="3" class="my-head">ID：</el-col>
         <el-col :span="9" class="my-content">{{smdParam.code || '-'}}</el-col>
@@ -38,7 +36,7 @@
         <el-col :span="3" class="my-head">Email：</el-col>
         <el-col :span="9" class="my-content">{{smdParam.email || '-'}}</el-col>
         <el-col :span="3" class="my-head">角色：</el-col>
-        <el-col :span="9" class="my-content">{{rolesUtil(smdParam.roles) || '-'}}</el-col>
+        <el-col :span="9" class="my-content">{{$OPTIONS2(smdParam.roles,options.roles) || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
         <el-col :span="3" class="my-head">创建时间：</el-col>
@@ -46,37 +44,20 @@
         <el-col :span="3" class="my-head"></el-col>
         <el-col :span="9" class="my-content"></el-col>
       </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="visible = false">关 闭</el-button>
+      </div>
     </el-dialog>
-    <!-- 【查看】对话框 结束-->
   </div>
 </template>
 
 <script>
-
   export default {
-    name: 'my-model',
-    props: ['rowData'],
+    name: 'detail',
+    props: ['rowData', 'smdParam'],
     data () {
       return {
-        dialog: {
-          detailDialogVisible: false
-        },
-        smdParam: {
-          id: '',
-          code: '',
-          nickName: '',
-          realName: '',
-          password: '',
-          phone: '',
-          idNumber: '',
-          province: '',
-          city: '',
-          wechat: '',
-          qq: '',
-          email: '',
-          roles: '',
-          createTime: ''
-        },
+        visible: false,
         options: {
           roles: [
             {value: 'AAA',label: '超级管理员'},
@@ -89,15 +70,15 @@
       }
     },
     methods: {
-      openDetailDialog() {
-        this.setSmdDialog(this.rowData);
-        this.dialog.detailDialogVisible = true;
+      open() {
+        this.setSmd(this.rowData);
+        this.visible = true;
       },
-      closeDetailDialog(){
-        this.cleanSmdDialog();
-        this.dialog.detailDialogVisible = false;
+      close(){
+        this.$emit('cleanSmd');
+        this.visible = false;
       },
-      setSmdDialog(row){
+      setSmd(row){
         this.smdParam.id = row.id;
         this.smdParam.code = row.code;
         this.smdParam.nickName = row.nickName;
@@ -112,47 +93,7 @@
         this.smdParam.email = row.email;
         this.smdParam.roles = row.roles;
         this.smdParam.createTime = row.createTime;
-      },
-      cleanSmdDialog(){
-        this.smdParam.id = '';
-        this.smdParam.code = '';
-        this.smdParam.nickName = '';
-        this.smdParam.realName = '';
-        this.smdParam.password = '';
-        this.smdParam.phone = '';
-        this.smdParam.idNumber = '';
-        this.smdParam.province = '';
-        this.smdParam.city = '';
-        this.smdParam.wechat = '';
-        this.smdParam.qq = '';
-        this.smdParam.email = '';
-        this.smdParam.roles = '';
-        this.smdParam.createTime = '';
-      },
-      rolesUtil(values){
-        var that = this;
-        if(!values){
-          return null;
-        }
-        var roleArr = values.split(',');
-        var texts = "";
-        for(var i=0;i<roleArr.length;i++){
-          var key = roleArr[i];
-          if(that.options.roles){
-            for(var j=0;j<that.options.roles.length;j++){
-              var roleObj = that.options.roles[j];
-              if(roleObj.value == key){
-                var text = roleObj.label;
-                texts += text;
-                if(i<roleArr.length-1){
-                  texts += ",";
-                }
-              }
-            }
-          }
-        }
-        return texts;
-      },
+      }
     }
   }
 </script>

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/components/Index'
+import Welcome from '@/components/Welcome'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
@@ -13,7 +13,7 @@ import dictionary from '@/components/system/dictionary'
 import log from '@/components/system/log'
 import permission from '@/components/system/permission'
 import role from '@/components/system/role'
-import user from '@/components/system/sys_user/search'
+import user from '@/components/system/sys_user/user'
 
 Vue.use(Router)
 
@@ -21,8 +21,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'index',
-      component: Index
+      name: 'welcome',
+      component: Welcome
     },
     {
       path: '/home',

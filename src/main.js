@@ -157,6 +157,30 @@ Vue.prototype.$OPTIONS = function(value, options){
   }
 }
 
+Vue.prototype.$OPTIONS2 = function(values, options){
+  if(!values){
+    return "";
+  }
+  var arr = values.split(',');
+  var texts = "";
+  for(var i=0;i<arr.length;i++){
+    var key = arr[i];
+    if(options){
+      for(var j=0;j<options.length;j++){
+        var obj = options[j];
+        if(obj.value == key){
+          var text = obj.label;
+          texts += text;
+          if(i<arr.length-1){
+            texts += ",";
+          }
+        }
+      }
+    }
+  }
+  return texts;
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -4,7 +4,7 @@
       <el-button type="danger" size="small" icon="el-icon-document" @click="open" :loading="btnLoading">删除</el-button>
     </el-tooltip>
     <el-dialog title="确定删除？" :visible.sync="visible" @close="close" width="40%">
-      <el-table :data="vm.page.multipleSelection" style="width: 100%;text-align: left;">
+      <el-table :data="vm.page.selection" style="width: 100%;text-align: left;">
         <el-table-column prop="arg1" :label="lab1"></el-table-column>
         <el-table-column prop="arg2" :label="lab2"></el-table-column>
         <el-table-column label="操作" width="100">
@@ -33,33 +33,33 @@
     },
     methods: {
       open(){
-        if(this.vm.page.multipleSelection && this.vm.page.multipleSelection.length > 0){
+        if(this.vm.page.selection && this.vm.page.selection.length > 0){
           this.visible = true;
         }else{
           this.$message({message: '请勾选要删除的数据',type: 'warning'});
         }
       },
       close(){
-        this.vm.page.multipleSelection = [];
+        this.vm.page.selection = [];
         this.vm.$refs.multipleTable.clearSelection();
         this.visible = false;
       },
       channel(row){
-        for(var i=0;i<this.vm.page.multipleSelection.length;i++){
-          if(this.vm.page.multipleSelection[i].id == row.id){
-            this.vm.page.multipleSelection.splice(i,1);
+        for(var i=0;i<this.vm.page.selection.length;i++){
+          if(this.vm.page.selection[i].id == row.id){
+            this.vm.page.selection.splice(i,1);
           }
         }
-        if(this.vm.page.multipleSelection.length == 0){
+        if(this.vm.page.selection.length == 0){
           this.close();
         }
       },
       commit(){
         var that = this;
         var ids = "";
-        for(var i=0;i<that.vm.page.multipleSelection.length;i++){
-          ids += that.vm.page.multipleSelection[i].id;
-          if(i<that.vm.page.multipleSelection.length-1){
+        for(var i=0;i<that.vm.page.selection.length;i++){
+          ids += that.vm.page.selection[i].id;
+          if(i<that.vm.page.selection.length-1){
             ids += ",";
           }
         }

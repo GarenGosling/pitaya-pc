@@ -4,7 +4,7 @@
     <el-dialog title="提示" :visible.sync="dialogVisible" @close="dialogVisible = false" width="30%" append-to-body>
       <span>确定删除「{{text}}」为「{{value}}」的数据？</span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="this.dialogVisible = false" :loading="btnLoading">取 消</el-button>
+        <el-button @click="dialogVisible = false" :loading="btnLoading">取 消</el-button>
         <el-button type="primary" @click="delCommit" :loading="btnLoading">确 定</el-button>
       </span>
     </el-dialog>

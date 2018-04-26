@@ -21,7 +21,7 @@
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
       <my-search :btnLoading="btnLoading" @search="search"></my-search>
       <my-reset :btnLoading="btnLoading" @reset="reset"></my-reset>
-      <my-save :btnLoading="btnLoading" @search="search"></my-save>
+      <save :btnLoading="btnLoading" :options="options" :smdParam="smdParam" :smdParamExtend="smdParamExtend" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
       <my-model :btnLoading="btnLoading" name="批量导入用户信息模板"></my-model>
       <my-import :btnLoading="btnLoading" :fn="fn" @search="search"></my-import>
       <my-export :btnLoading="btnLoading" :exportParam="searchParam" :fn="fn"></my-export>
@@ -32,17 +32,17 @@
     <!-- 表格 开始 -->
     <el-table
       ref="multipleTable"
-      :data="page.tableData"
+      :data="page.data"
       stripe
       v-loading="tabLoading"
       style="width: 100%;margin-top: 10px;text-align: left;" height="calc(100vh - 380px)"
-      @selection-change="handleSelectionChange">
+      @selection-change="pageSelectionChange">
       <el-table-column type="selection" width="55" fixed></el-table-column>
       <el-table-column type="index" width="50" fixed></el-table-column>
       <el-table-column fixed="left" label="操作" width="150">
         <template slot-scope="scope">
-          <my-detail :rowData="scope.row"></my-detail>
-          <my-update :rowData="scope.row" @search="search"></my-update>
+          <detail :rowData="scope.row" :smdParam="smdParam" @cleanSmd="cleanSmd"></detail>
+          <update :rowData="scope.row" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
           <my-delete text="用户名" :value="scope.row.nickName" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
         </template>
       </el-table-column>
@@ -50,12 +50,12 @@
       <el-table-column prop="realName" label="姓名" width="100" fixed></el-table-column>
       <el-table-column prop="phone" label="手机号"  width="110"></el-table-column>
       <el-table-column prop="idNumber" label="身份证号"  width="180"></el-table-column>
-      <el-table-column prop="province" label="省份" :formatter="provinceFormatter" width="120"></el-table-column>
-      <el-table-column prop="city" label="城市" :formatter="cityFormatter" width="120"></el-table-column>
+      <el-table-column prop="province" label="省份" :formatter="provinceFmt" width="120"></el-table-column>
+      <el-table-column prop="city" label="城市" :formatter="cityFmt" width="120"></el-table-column>
       <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
       <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180" :formatter="createTimeFormatter"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="180" :formatter="createTimeFmt"></el-table-column>
     </el-table>
     <!-- 表格 结束-->
 
@@ -64,11 +64,11 @@
       <el-pagination
         @size-change="pageSizeChange"
         @current-change="pageNoChange"
-        :current-page="page.currentPage"
-        :page-sizes="[1, 5, 10, 20, 50, 100, 500]"
+        :current-page.sync="page.currentPage"
+        :page-sizes="[5, 6, 7, 8, 9, 10, 15, 20, 50, 100, 500, 1000]"
         :page-size="searchParam.length"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="page.recordsTotal">
+        :total="page.total">
       </el-pagination>
     </div>
     <!-- 分页 结束 -->
@@ -78,30 +78,50 @@
 <script>
 import MySearch from '@/components/common/my-search'
 import MyReset from '@/components/common/my-reset'
-import MyDelete from "@/components/common/my-delete"
-import MyExport from "@/components/common/my-export"
+import MyDelete from '@/components/common/my-delete'
+import MyExport from '@/components/common/my-export'
 import MyModel from '@/components/common/my-model'
-import MyImport from "@/components/common/my-import"
-import MyRemove from "@/components/common/my-remove"
-import MySave from '@/components/system/sys_user/save'
-import MyUpdate from "@/components/system/sys_user/update"
-import MyDetail from "@/components/system/sys_user/detail"
+import MyImport from '@/components/common/my-import'
+import MyRemove from '@/components/common/my-remove'
+import Save from '@/components/system/sys_user/save'
+import Update from '@/components/system/sys_user/update'
+import Detail from '@/components/system/sys_user/detail'
 
 export default {
   name: 'Index',
   components: {
-    MySearch,MyReset,MySave,MyModel,MyImport,MyExport,MyDetail,MyUpdate,MyDelete,MyRemove
+    MySearch,MyReset,MyModel,MyImport,MyExport,MyDelete,MyRemove,
+    Save,Update,Detail
   },
   data () {
     return {
       fn: 'sysUser',
       searchParam: {
         start: 0,
-        length: 10,
+        length: 5,
         code: '',
         nickName: '',
         realName: '',
         phone: ''
+      },
+      smdParam: {
+        id: '',
+        code: '',
+        nickName: '',
+        realName: '',
+        password: '',
+        phone: '',
+        idNumber: '',
+        province: '',
+        city: '',
+        wechat: '',
+        qq: '',
+        email: '',
+        roles: '',
+        createTime: ''
+      },
+      smdParamExtend: {
+        roles: [],
       },
       options: {
         province: [
@@ -125,12 +145,12 @@ export default {
         ]
       },
       page: {
-        tableData: [],
-        recordsTotal: 0,
-        currentPage: 0,
-        multipleSelection: []
+        data: [],
+        total: 0,
+        currentPage: 1,
+        selection: []
       },
-      tabLoading: false,
+      tabLoading: true,
       btnLoading: false
     }
   },
@@ -138,8 +158,8 @@ export default {
     search(){
       var that = this;
       this.$AJAX.GET(this, 'sysUser/page', that.searchParam, function(response){
-        that.page.tableData = response.body.data.data;
-        that.page.recordsTotal = response.body.data.recordsTotal;
+        that.page.data = response.body.data.data;
+        that.page.total = response.body.data.recordsTotal;
       });
     },
     reset(){
@@ -149,25 +169,16 @@ export default {
       this.searchParam.phone = '';
       this.search();
     },
-    provinceFormatter(row, column){
-      return this.$OPTIONS(row.province, this.options.province);
-    },
-    cityFormatter(row, column){
-      return this.$OPTIONS(row.city, this.options.city);
-    },
-    createTimeFormatter(row, column){
-      return new Date(row.createTime).format("yyyy-MM-dd hh:mm:ss");
-    },
     pageSizeChange(val) {
-      this.searchParam.start = 0;
       this.searchParam.length = val;
-      this.search();
+      this.pageNoChange(this.page.currentPage);
     },
     pageNoChange(val) {
       this.searchParam.start = (val-1)*this.searchParam.length;
       this.search();
     },
-    handleSelectionChange(val) {
+    pageSelectionChange(val) {
+      this.page.selection = [];
       if(val && val.length > 0){
         for(var i=0;i<val.length;i++){
           var obj = val[i];
@@ -175,13 +186,39 @@ export default {
           dist.id = obj.id;
           dist.arg1 = obj.nickName;
           dist.arg2 = obj.realName
-          this.page.multipleSelection.push(dist);
+          this.page.selection.push(dist);
         }
       }
-    }
+    },
+    provinceFmt(row, column){
+      return this.$OPTIONS(row.province, this.options.province);
+    },
+    cityFmt(row, column){
+      return this.$OPTIONS(row.city, this.options.city);
+    },
+    createTimeFmt(row, column){
+      return new Date(row.createTime).format("yyyy-MM-dd hh:mm:ss");
+    },
+    cleanSmd(){
+      this.smdParam.id = '';
+      this.smdParam.code = '';
+      this.smdParam.nickName = '';
+      this.smdParam.realName = '';
+      this.smdParam.password = '';
+      this.smdParam.phone = '';
+      this.smdParam.idNumber = '';
+      this.smdParam.province = '';
+      this.smdParam.city = '';
+      this.smdParam.wechat = '';
+      this.smdParam.qq = '';
+      this.smdParam.email = '';
+      this.smdParam.roles = '';
+      this.smdParam.createTime = '';
+      this.smdParamExtend.roles = [];
+    },
   },
   mounted: function () {
     this.search();
-  },
+  }
 }
 </script>

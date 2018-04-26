@@ -1,9 +1,7 @@
 <template>
   <div class="text-component-div">
-    <el-button @click="openUpdateDialog()" type="text" size="small">编辑</el-button>
-
-    <!-- 【编辑】对话框 开始-->
-    <el-dialog title="编辑" :visible.sync="dialog.updateDialogVisible" @close="closeUpdateDialog" append-to-body>
+    <el-button @click="open()" type="text" size="small">编辑</el-button>
+    <el-dialog title="编辑" :visible.sync="visible" @close="close" append-to-body>
       <el-row :gutter="20" class="my-row">
         <el-col :span="12" class="my-head-right">ID：{{smdParam.code || '-'}}</el-col>
         <el-col :span="12" class="my-head-right">创建时间：{{smdParam.createTime || '-'}}</el-col>
@@ -73,7 +71,7 @@
           </el-input>
         </el-col>
         <el-col :span="12">
-          <el-select v-model="smdExtendParam.roles" filterable multiple placeholder="角色" style="width: 100%;">
+          <el-select v-model="smdParamExtend.roles" filterable multiple placeholder="角色" style="width: 100%;">
             <el-option
               v-for="item in options.roles"
               :key="item.value"
@@ -84,40 +82,21 @@
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialog.updateDialogVisible = false" :loading="winBtnLoading">取 消</el-button>
-        <el-button type="primary" @click="updateDialogCommit" :loading="winBtnLoading">确 定</el-button>
+        <el-button @click="close" :loading="winBtnLoading">取 消</el-button>
+        <el-button type="primary" @click="commit" :loading="winBtnLoading">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 【编辑】对话框 结束-->
   </div>
 </template>
 
 <script>
   export default {
-    name: 'my-model',
-    props: ['btnLoading', 'rowData'],
+    name: 'update',
+    props: ['btnLoading', 'rowData', 'smdParam', 'fn'],
     data () {
       return {
         winBtnLoading: false,
-        dialog: {
-          updateDialogVisible: false,
-        },
-        smdParam: {
-          id: '',
-          code: '',
-          nickName: '',
-          realName: '',
-          password: '',
-          phone: '',
-          idNumber: '',
-          province: '',
-          city: '',
-          wechat: '',
-          qq: '',
-          email: '',
-          roles: '',
-          createTime: ''
-        },
+        visible: false,
         options: {
           province: [
             {value: '01',label: '北京'},
@@ -139,24 +118,24 @@
             {value: 'EEE',label: '报表管理员'},
           ]
         },
-        smdExtendParam: {
+        smdParamExtend: {
           roles: [],
         },
       }
     },
     methods: {
-      openUpdateDialog(){
-        this.setSmdDialog(this.rowData);
+      open(){
+        this.setSmd(this.rowData);
         if(this.rowData.roles){
-          this.smdExtendParam.roles = this.rowData.roles.split(',');
+          this.smdParamExtend.roles = this.rowData.roles.split(',');
         }
-        this.dialog.updateDialogVisible = true
+        this.visible = true
       },
-      closeUpdateDialog(){
-        this.cleanSmdDialog();
-        this.dialog.updateDialogVisible =false;
+      close(){
+        this.$emit('cleanSmd');
+        this.visible =false;
       },
-      setSmdDialog(row){
+      setSmd(row){
         this.smdParam.id = row.id;
         this.smdParam.code = row.code;
         this.smdParam.nickName = row.nickName;
@@ -172,29 +151,13 @@
         this.smdParam.roles = row.roles;
         this.smdParam.createTime = row.createTime;
       },
-      cleanSmdDialog(){
-        this.smdParam.id = '';
-        this.smdParam.code = '';
-        this.smdParam.nickName = '';
-        this.smdParam.realName = '';
-        this.smdParam.password = '';
-        this.smdParam.phone = '';
-        this.smdParam.idNumber = '';
-        this.smdParam.province = '';
-        this.smdParam.city = '';
-        this.smdParam.wechat = '';
-        this.smdParam.qq = '';
-        this.smdParam.email = '';
-        this.smdParam.roles = '';
-        this.smdParam.createTime = '';
-      },
-      updateDialogCommit(){
+      commit(){
         var that = this;
-        if(that.smdExtendParam.roles){
-          that.smdParam.roles = that.smdExtendParam.roles.join(',');
+        if(that.smdParamExtend.roles){
+          that.smdParam.roles = that.smdParamExtend.roles.join(',');
         }
-        that.$AJAX.PUT(this, that.smdParam, 'sysUser/update', function(response){
-          that.closeUpdateDialog();
+        that.$AJAX.PUT(this, that.smdParam, this.fn + '/update', function(response){
+          that.close();
           that.$emit('search');
         });
       }
