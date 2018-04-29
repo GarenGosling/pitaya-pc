@@ -15,6 +15,7 @@ import permission from '@/components/system/permission'
 import role from '@/components/system/role'
 import user from '@/components/system/sys_user/user'
 import area from '@/components/system/sys_area/area'
+import increment from '@/components/system/sys_increment/increment'
 
 Vue.use(Router)
 
@@ -82,6 +83,10 @@ export default new Router({
       path: '/area',
       name: 'area',
       component: area
+    },{
+      path: '/increment',
+      name: 'increment',
+      component: increment
     }
   ]
 })

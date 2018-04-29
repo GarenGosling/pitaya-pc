@@ -3,25 +3,11 @@
     <!-- 搜索条件 开始 -->
     <el-row :gutter="20">
       <el-col :span="6">
-        <el-input placeholder="ID" prefix-icon="el-icon-search" v-model="searchParam.id"/>
+        <el-input placeholder="英文名称" prefix-icon="el-icon-search" v-model="searchParam.name"/>
       </el-col>
       <el-col :span="6">
-        <el-input placeholder="上级ID" prefix-icon="el-icon-search" v-model="searchParam.parentId"/>
+        <el-input placeholder="中文名称" prefix-icon="el-icon-search" v-model="searchParam.label"/>
       </el-col>
-      <el-col :span="6">
-        <el-input placeholder="名称" prefix-icon="el-icon-search" v-model="searchParam.name"/>
-      </el-col>
-      <el-col :span="6">
-        <el-select v-model="searchParam.type" filterable placeholder="类型" style="width: 100%;">
-          <el-option
-            v-for="item in options.type"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="6"></el-col>
     </el-row>
     <!-- 搜索条件 结束 -->
 
@@ -29,11 +15,8 @@
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
       <my-search :btnLoading="btnLoading" @search="search"></my-search>
       <my-reset :btnLoading="btnLoading" @reset="reset"></my-reset>
-      <save :btnLoading="btnLoading" :options="options" :smdParam="smdParam" :smdParamExtend="smdParamExtend" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
-      <my-model :btnLoading="btnLoading" name="批量导入用户信息模板"></my-model>
-      <my-import :btnLoading="btnLoading" :fn="fn" @search="search"></my-import>
-      <my-export :btnLoading="btnLoading" :exportParam="searchParam" :fn="fn"></my-export>
-      <my-remove :btnLoading="btnLoading" :vm="this" lab1="昵称" lab2="姓名" :fn="fn" @search="search"></my-remove>
+      <save :btnLoading="btnLoading" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
+      <my-remove :btnLoading="btnLoading" :vm="this" lab1="英文名称" lab2="中文名称" :fn="fn" removeBy="name" @search="search"></my-remove>
     </el-row>
     <!-- 按钮 结束-->
 
@@ -50,16 +33,16 @@
       <el-table-column type="index" width="50" fixed></el-table-column>
       <el-table-column fixed="left" label="操作" width="150">
         <template slot-scope="scope">
-          <update :rowData="scope.row" :options="options" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
-          <my-delete text="名称" :value="scope.row.name" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
+          <update :rowData="scope.row" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
+          <my-delete text="英文名称" :value="scope.row.name" :id="scope.row.name" :fn="fn" @search="search"></my-delete>
         </template>
       </el-table-column>
-      <el-table-column prop="id" label="ID" width="100" fixed></el-table-column>
-      <el-table-column prop="parentId" label="上级ID" width="100" fixed></el-table-column>
-      <el-table-column prop="name" label="名称"  width="100"></el-table-column>
-      <el-table-column prop="type" label="类型" width="100"></el-table-column>
-      <el-table-column prop="fullname" label="全名称"  width="350"></el-table-column>
-      <el-table-column prop="fullpath" label="全路径" width="350"></el-table-column>
+      <el-table-column prop="name" label="英文名称" width="120" fixed></el-table-column>
+      <el-table-column prop="label" label="中文名称" width="120" fixed></el-table-column>
+      <el-table-column prop="id" label="整数编码"  width="120"></el-table-column>
+      <el-table-column prop="code" label="字符编码" width="150"></el-table-column>
+      <el-table-column prop="size" label="编码位数" width="120"></el-table-column>
+      <el-table-column prop="description" label="描述" width="500"></el-table-column>
     </el-table>
     <!-- 表格 结束-->
 
@@ -87,42 +70,33 @@ import MyExport from '@/components/common/my-export'
 import MyModel from '@/components/common/my-model'
 import MyImport from '@/components/common/my-import'
 import MyRemove from '@/components/common/my-remove'
-import Save from '@/components/system/sys_area/save'
-import Update from '@/components/system/sys_area/update'
+import Save from '@/components/system/sys_increment/save'
+import Update from '@/components/system/sys_increment/update'
+import ElCol from "element-ui/packages/col/src/col";
 
 export default {
   name: 'Index',
   components: {
+    ElCol,
     MySearch,MyReset,MyModel,MyImport,MyExport,MyDelete,MyRemove,
     Save,Update
   },
   data () {
     return {
-      fn: 'sysArea',
+      fn: 'sysIncrement',
       searchParam: {
         start: 0,
         length: 5,
-        id: '',
-        parentId: '',
         name: '',
-        type: ''
+        label: ''
       },
       smdParam: {
-        id: '',
-        parentId: '',
         name: '',
-        fullname: '',
-        fullpath: '',
-        type: ''
-      },
-      smdParamExtend: {
-      },
-      options: {
-        type: [
-          {value: '省份', label: '省份'},
-          {value: '城市', label: '城市'},
-          {value: '区县', label: '区县'}
-        ]
+        id: '',
+        code: '',
+        size: '',
+        label: '',
+        description: ''
       },
       page: {
         data: [],
@@ -143,9 +117,8 @@ export default {
       });
     },
     reset(){
-      this.searchParam.parentId = '';
       this.searchParam.name = '';
-      this.searchParam.type = '';
+      this.searchParam.label = '';
       this.search();
     },
     pageSizeChange(val) {
@@ -163,19 +136,19 @@ export default {
           var obj = val[i];
           var dist = {};
           dist.id = obj.id;
-          dist.arg1 = obj.fullname;
-          dist.arg2 = obj.type
+          dist.arg1 = obj.name;
+          dist.arg2 = obj.label
           this.page.selection.push(dist);
         }
       }
     },
     cleanSmd(){
-      this.smdParam.id = '';
-      this.smdParam.parentId = '';
       this.smdParam.name = '';
-      this.smdParam.fullname = '';
-      this.smdParam.fullpath = '';
-      this.smdParam.type = '';
+      this.smdParam.id = '';
+      this.smdParam.code = '';
+      this.smdParam.size = '';
+      this.smdParam.label = '';
+      this.smdParam.description = '';
     }
   },
   mounted: function () {

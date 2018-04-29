@@ -35,7 +35,8 @@
       :data="page.data"
       stripe
       v-loading="tabLoading"
-      style="width: 100%;margin-top: 10px;text-align: left;" height="calc(100vh - 380px)"
+      class="my-table"
+      height="calc(100vh - 340px)"
       @selection-change="pageSelectionChange">
       <el-table-column type="selection" width="55" fixed></el-table-column>
       <el-table-column type="index" width="50" fixed></el-table-column>

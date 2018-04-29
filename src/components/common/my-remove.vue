@@ -24,7 +24,7 @@
 <script>
   export default {
     name: 'my-model',
-    props: ['btnLoading', 'vm', 'lab1', 'lab2', 'fn'],
+    props: ['btnLoading', 'vm', 'lab1', 'lab2', 'fn', 'removeBy'],
     data () {
       return {
         winBtnLoading: false,
@@ -58,7 +58,11 @@
         var that = this;
         var ids = "";
         for(var i=0;i<that.vm.page.selection.length;i++){
-          ids += that.vm.page.selection[i].id;
+          if(this.removeBy == "name"){
+            ids += that.vm.page.selection[i].arg1;
+          }else{
+            ids += that.vm.page.selection[i].id;
+          }
           if(i<that.vm.page.selection.length-1){
             ids += ",";
           }

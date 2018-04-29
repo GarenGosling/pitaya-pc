@@ -23,94 +23,91 @@
         </el-menu-item>
         <el-submenu index="01">
           <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">系统管理</span>
+            <i class="el-icon-star-off"></i>
+            <span slot="title">初始设置</span>
           </template>
-          <el-menu-item index="0101" @click="toPath('#/user', '用户管理', '0101')">
+          <el-menu-item index="0101" @click="toPath('#/increment', '编码管理', '0101')">
             <i class="el-icon-document"></i>
-            <span slot="title">用户管理</span>
+            <span slot="title">编码管理</span>
           </el-menu-item>
-          <el-menu-item index="0102" @click="toPath('#/role', '角色管理', '0102')">
-            <i class="el-icon-document"></i>
-            <span slot="title">角色管理</span>
-          </el-menu-item>
-          <el-menu-item index="0103" @click="toPath('#/permission', '权限管理', '0103')">
-            <i class="el-icon-document"></i>
-            <span slot="title">权限管理</span>
-          </el-menu-item>
-          <el-menu-item index="0104" @click="toPath('#/dictionary', '字典管理', '0104')">
+          <el-menu-item index="0102" @click="toPath('#/dictionary', '字典管理', '0102')">
             <i class="el-icon-document"></i>
             <span slot="title">字典管理</span>
-          </el-menu-item>
-          <el-menu-item index="0105" @click="toPath('#/log', '日志管理', '0105')">
-            <i class="el-icon-document"></i>
-            <span slot="title">日志管理</span>
           </el-menu-item>
         </el-submenu>
         <el-submenu index="02">
           <template slot="title">
-            <i class="el-icon-goods"></i>
-            <span slot="title">公司管理</span>
+            <i class="el-icon-setting"></i>
+            <span slot="title">系统管理</span>
           </template>
-          <el-menu-item index="0201" @click="toPath('#/org', '组织管理', '0201')">
+          <el-menu-item index="0201" @click="toPath('#/area', '地区管理', '0201')">
             <i class="el-icon-document"></i>
-            <span slot="title">组织管理</span>
+            <span slot="title">地区管理</span>
           </el-menu-item>
-          <el-menu-item index="0202" @click="toPath('#/post', '岗位管理', '0202')">
+          <el-menu-item index="0202" @click="toPath('#/log', '日志管理', '0202')">
             <i class="el-icon-document"></i>
-            <span slot="title">岗位管理</span>
-          </el-menu-item>
-          <el-menu-item index="0203" @click="toPath('#/hr', '员工管理', '0203')">
-            <i class="el-icon-document"></i>
-            <span slot="title">员工管理</span>
+            <span slot="title">日志管理</span>
           </el-menu-item>
         </el-submenu>
         <el-submenu index="03">
           <template slot="title">
+            <i class="el-icon-setting"></i>
+            <span slot="title">系统授权</span>
+          </template>
+          <el-menu-item index="0301" @click="toPath('#/permission', '权限管理', '0301')">
+            <i class="el-icon-document"></i>
+            <span slot="title">权限管理</span>
+          </el-menu-item>
+          <el-menu-item index="0302" @click="toPath('#/role', '角色管理', '0302')">
+            <i class="el-icon-document"></i>
+            <span slot="title">角色管理</span>
+          </el-menu-item>
+          <el-menu-item index="0303" @click="toPath('#/user', '用户管理', '0303')">
+            <i class="el-icon-document"></i>
+            <span slot="title">用户管理</span>
+          </el-menu-item>
+        </el-submenu>
+        <el-submenu index="04">
+          <template slot="title">
+            <i class="el-icon-goods"></i>
+            <span slot="title">公司管理</span>
+          </template>
+          <el-menu-item index="0401" @click="toPath('#/org', '组织管理', '0401')">
+            <i class="el-icon-document"></i>
+            <span slot="title">组织管理</span>
+          </el-menu-item>
+          <el-menu-item index="0402" @click="toPath('#/post', '岗位管理', '0402')">
+            <i class="el-icon-document"></i>
+            <span slot="title">岗位管理</span>
+          </el-menu-item>
+          <el-menu-item index="0403" @click="toPath('#/hr', '员工管理', '0403')">
+            <i class="el-icon-document"></i>
+            <span slot="title">员工管理</span>
+          </el-menu-item>
+        </el-submenu>
+        <el-submenu index="05">
+          <template slot="title">
             <i class="el-icon-service"></i>
             <span slot="title">业务管理</span>
           </template>
-          <el-menu-item index="0301" @click="toPath('#/allot', '分销管理', '0301')">
+          <el-menu-item index="0501" @click="toPath('#/allot', '分销管理', '0501')">
             <i class="el-icon-document"></i>
             <span slot="title">分销管理</span>
           </el-menu-item>
-          <el-menu-item index="0302" @click="toPath('#/customer', '客户管理', '0302')">
+          <el-menu-item index="0502" @click="toPath('#/customer', '客户管理', '0502')">
             <i class="el-icon-document"></i>
             <span slot="title">客户管理</span>
-          </el-menu-item>
-          <el-menu-item index="03022" @click="toPath('#/customer', '客户管理', '03022')">
-            <i class="el-icon-document"></i>
-            <span slot="title">客户管理2</span>
-          </el-menu-item>
-          <el-menu-item index="03023" @click="toPath('#/customer', '客户管理', '03023')">
-            <i class="el-icon-document"></i>
-            <span slot="title">客户管理3</span>
-          </el-menu-item>
-          <el-menu-item index="03024" @click="toPath('#/customer', '客户管理', '03024')">
-            <i class="el-icon-document"></i>
-            <span slot="title">客户管理4</span>
-          </el-menu-item>
-          <el-menu-item index="03025" @click="toPath('#/customer', '客户管理', '03025')">
-            <i class="el-icon-document"></i>
-            <span slot="title">客户管理</span>
-          </el-menu-item>
-          <el-menu-item index="0302" @click="toPath('#/customer', '客户管理', '0302')">
-            <i class="el-icon-document"></i>
-            <span slot="title">客户管理5</span>
           </el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header style="height: 30px;">
-        <i class="el-icon-menu"></i> &nbsp;&nbsp;欢迎使用「火龙果」运营管理系统
-      </el-header>
       <el-main>
         <el-row>
           <el-col :span="12" style="padding-top: 10px;padding-bottom: 10px;">
-            <el-input placeholder="请输入内容" v-model="input1">
-              <el-button slot="append" icon="el-icon-search"></el-button>
-            </el-input>
+            <el-header style="height: 30px;">
+              <i class="el-icon-menu"></i> &nbsp;&nbsp;欢迎使用「火龙果」运营管理系统
+            </el-header>
           </el-col>
           <el-col :span="6" style="text-align: right;">
             <el-badge :value="200" :max="99" class="item">
@@ -255,6 +252,7 @@ export default {
     background-color: #F8ffff;
     text-align: left;
     line-height: 30px;
+    font-size: 20px;
   }
   .el-footer {
     color: #333;
