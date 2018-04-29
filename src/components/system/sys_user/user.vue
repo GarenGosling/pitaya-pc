@@ -19,9 +19,9 @@
 
     <!-- 按钮 开始-->
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <my-search :btnLoading="btnLoading" @search="search"></my-search>
-      <my-reset :btnLoading="btnLoading" @reset="reset"></my-reset>
-      <save :btnLoading="btnLoading" :options="options" :smdParam="smdParam" :smdParamExtend="smdParamExtend" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
+      <my-search :vm="this"></my-search>
+      <my-reset :vm="this"></my-reset>
+      <save :vm="this"></save>
       <my-model :btnLoading="btnLoading" name="批量导入用户信息模板"></my-model>
       <my-import :btnLoading="btnLoading" :fn="fn" @search="search"></my-import>
       <my-export :btnLoading="btnLoading" :exportParam="searchParam" :fn="fn"></my-export>
@@ -42,8 +42,8 @@
       <el-table-column type="index" width="50" fixed></el-table-column>
       <el-table-column fixed="left" label="操作" width="150">
         <template slot-scope="scope">
-          <detail :rowData="scope.row" :smdParam="smdParam" @cleanSmd="cleanSmd"></detail>
-          <update :rowData="scope.row" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
+          <detail :rowData="scope.row" :smdParam="smdParam" :options="options" @cleanSmd="cleanSmd"></detail>
+          <update :rowData="scope.row" :smdParam="smdParam" :options="options" @cleanSmd="cleanSmd" @search="search" :fn="fn"></update>
           <my-delete text="用户名" :value="scope.row.nickName" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
         </template>
       </el-table-column>
@@ -163,13 +163,6 @@ export default {
         that.page.total = response.body.data.recordsTotal;
       });
     },
-    reset(){
-      this.searchParam.code = '';
-      this.searchParam.nickName = '';
-      this.searchParam.realName = '';
-      this.searchParam.phone = '';
-      this.search();
-    },
     pageSizeChange(val) {
       this.searchParam.length = val;
       this.pageNoChange(this.page.currentPage);
@@ -201,20 +194,9 @@ export default {
       return new Date(row.createTime).format("yyyy-MM-dd hh:mm:ss");
     },
     cleanSmd(){
-      this.smdParam.id = '';
-      this.smdParam.code = '';
-      this.smdParam.nickName = '';
-      this.smdParam.realName = '';
-      this.smdParam.password = '';
-      this.smdParam.phone = '';
-      this.smdParam.idNumber = '';
-      this.smdParam.province = '';
-      this.smdParam.city = '';
-      this.smdParam.wechat = '';
-      this.smdParam.qq = '';
-      this.smdParam.email = '';
-      this.smdParam.roles = '';
-      this.smdParam.createTime = '';
+      for(var p in this.smdParam){
+        this.smdParam[p] = '';
+      }
       this.smdParamExtend.roles = [];
     }
   },

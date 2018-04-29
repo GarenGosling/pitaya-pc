@@ -54,19 +54,10 @@
 <script>
   export default {
     name: 'detail',
-    props: ['rowData', 'smdParam'],
+    props: ['rowData', 'smdParam', 'options'],
     data () {
       return {
-        visible: false,
-        options: {
-          roles: [
-            {value: 'AAA',label: '超级管理员'},
-            {value: 'BBB',label: '公司管理员'},
-            {value: 'CCC',label: '业务管理员'},
-            {value: 'DDD',label: '系统管理员'},
-            {value: 'EEE',label: '报表管理员'},
-          ]
-        },
+        visible: false
       }
     },
     methods: {
@@ -79,20 +70,9 @@
         this.visible = false;
       },
       setSmd(row){
-        this.smdParam.id = row.id;
-        this.smdParam.code = row.code;
-        this.smdParam.nickName = row.nickName;
-        this.smdParam.realName = row.realName;
-        this.smdParam.password = row.password;
-        this.smdParam.phone = row.phone;
-        this.smdParam.idNumber = row.idNumber;
-        this.smdParam.province = row.province;
-        this.smdParam.city = row.city;
-        this.smdParam.wechat = row.wechat;
-        this.smdParam.qq = row.qq;
-        this.smdParam.email = row.email;
-        this.smdParam.roles = row.roles;
-        this.smdParam.createTime = row.createTime;
+        for(var p in this.smdParam){
+          this.smdParam[p] = row[p];
+        }
       }
     }
   }

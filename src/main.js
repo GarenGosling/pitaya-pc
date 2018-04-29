@@ -181,6 +181,15 @@ Vue.prototype.$OPTIONS2 = function(values, options){
   return texts;
 }
 
+Vue.prototype.$RESET = function(vm){
+  for(var p in vm.searchParam){
+    if(p != 'start' && p != 'length'){
+      vm.searchParam[p] = '';
+    }
+  }
+  vm.search();
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

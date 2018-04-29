@@ -92,32 +92,11 @@
 <script>
   export default {
     name: 'update',
-    props: ['rowData', 'smdParam', 'fn'],
+    props: ['rowData', 'smdParam', 'options', 'fn'],
     data () {
       return {
         winBtnLoading: false,
         visible: false,
-        options: {
-          province: [
-            {value: '01',label: '北京'},
-            {value: '02',label: '上海'},
-            {value: '03',label: '河北'},
-            {value: '04',label: '黑龙江'},
-          ],
-          city: [
-            {value: '01',label: '通州'},
-            {value: '02',label: '朝阳'},
-            {value: '03',label: '丰台'},
-            {value: '04',label: '海淀'},
-          ],
-          roles: [
-            {value: 'AAA',label: '超级管理员'},
-            {value: 'BBB',label: '公司管理员'},
-            {value: 'CCC',label: '业务管理员'},
-            {value: 'DDD',label: '系统管理员'},
-            {value: 'EEE',label: '报表管理员'},
-          ]
-        },
         smdParamExtend: {
           roles: [],
         },
@@ -136,20 +115,9 @@
         this.visible =false;
       },
       setSmd(row){
-        this.smdParam.id = row.id;
-        this.smdParam.code = row.code;
-        this.smdParam.nickName = row.nickName;
-        this.smdParam.realName = row.realName;
-        this.smdParam.password = row.password;
-        this.smdParam.phone = row.phone;
-        this.smdParam.idNumber = row.idNumber;
-        this.smdParam.province = row.province;
-        this.smdParam.city = row.city;
-        this.smdParam.wechat = row.wechat;
-        this.smdParam.qq = row.qq;
-        this.smdParam.email = row.email;
-        this.smdParam.roles = row.roles;
-        this.smdParam.createTime = row.createTime;
+        for(var p in this.smdParam){
+          this.smdParam[p] = row[p];
+        }
       },
       commit(){
         var that = this;
