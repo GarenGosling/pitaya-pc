@@ -27,8 +27,8 @@
 
     <!-- 按钮 开始-->
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <my-search :btnLoading="btnLoading" @search="search"></my-search>
-      <my-reset :btnLoading="btnLoading" @reset="reset"></my-reset>
+      <my-search :vm="this"></my-search>
+      <my-reset :vm="this"></my-reset>
       <save :btnLoading="btnLoading" :options="options" :smdParam="smdParam" :smdParamExtend="smdParamExtend" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
       <my-model :btnLoading="btnLoading" name="批量导入用户信息模板"></my-model>
       <my-import :btnLoading="btnLoading" :fn="fn" @search="search"></my-import>

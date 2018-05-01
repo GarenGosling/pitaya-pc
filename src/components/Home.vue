@@ -16,7 +16,8 @@
                @close="handleClose"
                background-color="#213546"
                text-color="#fff"
-               active-text-color="#ffd04b">
+               active-text-color="#ffd04b"
+               unique-opened>
         <el-menu-item index="0" @click="toPath('#/', '首页', '0')">
           <i class="el-icon-tickets"></i>
           <span slot="title">首页</span>
