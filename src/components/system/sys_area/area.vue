@@ -44,8 +44,8 @@
                 <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showChildRow"  @click="showChildRowClick">新增子节点</el-button>
                 <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showBotherRow" @click="showBotherRowClick">新增兄弟节点</el-button>
                 <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showBotherRow"  @click="showBotherRowClick">新增兄弟节点</el-button>
-                <el-button type="primary" size="small">修改</el-button>
-                <el-button type="danger" size="small">删除</el-button>
+                <el-button type="primary" size="small" plain>修改</el-button>
+                <el-button type="danger" size="small" plain>删除</el-button>
               </el-col>
             </el-row>
           </div>
