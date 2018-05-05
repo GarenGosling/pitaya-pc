@@ -1,185 +1,267 @@
 <template>
-  <div>
-    <!-- 搜索条件 开始 -->
-    <el-row :gutter="20">
-      <el-col :span="6">
-        <el-input placeholder="ID" prefix-icon="el-icon-search" v-model="searchParam.id"/>
-      </el-col>
-      <el-col :span="6">
-        <el-input placeholder="上级ID" prefix-icon="el-icon-search" v-model="searchParam.parentId"/>
-      </el-col>
-      <el-col :span="6">
-        <el-input placeholder="名称" prefix-icon="el-icon-search" v-model="searchParam.name"/>
-      </el-col>
-      <el-col :span="6">
-        <el-select v-model="searchParam.type" filterable placeholder="类型" style="width: 100%;">
-          <el-option
-            v-for="item in options.type"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="6"></el-col>
-    </el-row>
-    <!-- 搜索条件 结束 -->
-
-    <!-- 按钮 开始-->
-    <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <my-search :vm="this"></my-search>
-      <my-reset :vm="this"></my-reset>
-      <save :btnLoading="btnLoading" :options="options" :smdParam="smdParam" :smdParamExtend="smdParamExtend" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
-      <my-model :btnLoading="btnLoading" name="批量导入用户信息模板"></my-model>
-      <my-import :btnLoading="btnLoading" :fn="fn" @search="search"></my-import>
-      <my-export :btnLoading="btnLoading" :exportParam="searchParam" :fn="fn"></my-export>
-      <my-remove :btnLoading="btnLoading" :vm="this" lab1="昵称" lab2="姓名" :fn="fn" @search="search"></my-remove>
-    </el-row>
-    <!-- 按钮 结束-->
-
-    <!-- 表格 开始 -->
-    <el-table
-      ref="multipleTable"
-      :data="page.data"
-      stripe
-      v-loading="tabLoading"
-      class="my-table"
-      height="calc(100vh - 340px)"
-      @selection-change="pageSelectionChange">
-      <el-table-column type="selection" width="55" fixed></el-table-column>
-      <el-table-column type="index" width="50" fixed></el-table-column>
-      <el-table-column fixed="left" label="操作" width="150">
-        <template slot-scope="scope">
-          <update :rowData="scope.row" :options="options" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></update>
-          <my-delete text="名称" :value="scope.row.name" :id="scope.row.id" :fn="fn" @search="search"></my-delete>
-        </template>
-      </el-table-column>
-      <el-table-column prop="id" label="ID" width="100" fixed></el-table-column>
-      <el-table-column prop="parentId" label="上级ID" width="100" fixed></el-table-column>
-      <el-table-column prop="name" label="名称"  width="100"></el-table-column>
-      <el-table-column prop="type" label="类型" width="100"></el-table-column>
-      <el-table-column prop="fullname" label="全名称"  width="350"></el-table-column>
-      <el-table-column prop="fullpath" label="全路径" width="350"></el-table-column>
-    </el-table>
-    <!-- 表格 结束-->
-
-    <!-- 分页 开始 -->
-    <div class="block" style="margin-top: 10px;">
-      <el-pagination
-        @size-change="pageSizeChange"
-        @current-change="pageNoChange"
-        :current-page.sync="page.currentPage"
-        :page-sizes="[5, 6, 7, 8, 9, 10, 15, 20, 50, 100, 500, 1000]"
-        :page-size="searchParam.length"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="page.total">
-      </el-pagination>
-    </div>
-    <!-- 分页 结束 -->
-  </div>
+  <el-row>
+    <el-col :span="12">
+      <div style="width:98%;margin-left:1%;">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span style="font-size: 16px;"><i class="el-icon-picture-outline"></i>&nbsp;行政区域</span>
+          </div>
+          <div class="grid-content bg-purple" style="height: calc(100vh - 300px);overflow:auto;">
+            <el-tree ref="tree" :data="treeData" show-checkbox node-key="id" lazy highlight-current :load="loadChildren" accordion @node-click="handleNodeClick"></el-tree>
+          </div>
+        </el-card>
+      </div>
+    </el-col>
+    <el-col :span="12">
+      <div style="width:98%;margin-left:1%;">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span style="font-size: 16px;"><i class="el-icon-location-outline"></i>&nbsp;当前节点信息</span>
+          </div>
+          <div class="grid-content bg-purple-light" :style="currentDivStyle">
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">ID：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="currentNodeData.id" disabled></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">名称：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="currentNodeData.label"></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">父ID：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="currentNodeData.parentId" disabled></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">&nbsp;</el-col>
+              <el-col :span="20" style="text-align:left;">
+                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showChildRow" @click="showChildRowClick">新增子节点</el-button>
+                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showChildRow"  @click="showChildRowClick">新增子节点</el-button>
+                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showBotherRow" @click="showBotherRowClick">新增兄弟节点</el-button>
+                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showBotherRow"  @click="showBotherRowClick">新增兄弟节点</el-button>
+                <el-button type="primary" size="small">修改</el-button>
+                <el-button type="danger" size="small">删除</el-button>
+              </el-col>
+            </el-row>
+          </div>
+        </el-card>
+        <el-card class="box-card" style="margin-top: 10px;" v-show="showChildRow">
+          <div slot="header" class="clearfix">
+            <span style="font-size: 16px;"><i class="el-icon-edit"></i>&nbsp;新增子节点</span>
+          </div>
+          <div class="grid-content bg-purple-light" style="height: calc(50vh - 240px);font-size:14px;">
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">名称：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="childNodeData.label"></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">父ID：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="childNodeData.parentId" disabled></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">&nbsp;</el-col>
+              <el-col :span="20" style="text-align:left;">
+                <el-button type="primary" size="small" plain @click="saveChildNodeData">提交</el-button>
+              </el-col>
+            </el-row>
+          </div>
+        </el-card>
+        <el-card class="box-card" style="margin-top: 10px;" v-show="showBotherRow">
+          <div slot="header" class="clearfix">
+            <span style="font-size: 16px;"><i class="el-icon-edit"></i>&nbsp;新增兄弟节点</span>
+          </div>
+          <div class="grid-content bg-purple-light" style="height: calc(50vh - 240px);font-size:14px;">
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">名称：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="botherNodeData.label"></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">父ID：</el-col>
+              <el-col :span="20">
+                <el-input suffix-icon="el-icon-edit-outline" clearable v-model="botherNodeData.parentId" disabled></el-input>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">&nbsp;</el-col>
+              <el-col :span="20" style="text-align:left;">
+                <el-button type="primary" size="small" plain @click="saveBotherNodeData">提交</el-button>
+              </el-col>
+            </el-row>
+          </div>
+        </el-card>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
-import MySearch from '@/components/common/my-search'
-import MyReset from '@/components/common/my-reset'
-import MyDelete from '@/components/common/my-delete'
-import MyExport from '@/components/common/my-export'
-import MyModel from '@/components/common/my-model'
-import MyImport from '@/components/common/my-import'
-import MyRemove from '@/components/common/my-remove'
-import Save from '@/components/system/sys_area/save'
-import Update from '@/components/system/sys_area/update'
 
 export default {
-  name: 'Index',
-  components: {
-    MySearch,MyReset,MyModel,MyImport,MyExport,MyDelete,MyRemove,
-    Save,Update
-  },
+  name: 'sysArea',
   data () {
     return {
       fn: 'sysArea',
-      searchParam: {
-        start: 0,
-        length: 5,
+      treeData: [],
+      currentNodeData: {
         id: '',
-        parentId: '',
-        name: '',
-        type: ''
+        label: '',
+        parentId: ''
       },
-      smdParam: {
+      childNodeData: {
         id: '',
-        parentId: '',
-        name: '',
-        fullname: '',
-        fullpath: '',
-        type: ''
+        label: '',
+        parentId: ''
       },
-      smdParamExtend: {
+      botherNodeData: {
+        id: '',
+        label: '',
+        parentId: ''
       },
-      options: {
-        type: [
-          {value: '省份', label: '省份'},
-          {value: '城市', label: '城市'},
-          {value: '区县', label: '区县'}
-        ]
-      },
-      page: {
-        data: [],
-        total: 0,
-        currentPage: 1,
-        selection: []
-      },
-      tabLoading: true,
-      btnLoading: false
+      showChildRow: false,
+      showBotherRow: false,
+
+    }
+  },
+  computed: {
+    currentDivStyle: function () {
+      if(this.showChildRow == false && this.showBotherRow == false){
+        return 'height: calc(100vh - 310px);font-size:14px;';
+      }else{
+        return 'height: calc(50vh - 190px);font-size:14px;';
+      }
     }
   },
   methods: {
-    search(){
+    initTree(){
       var that = this;
-      this.$AJAX.GET(this, this.fn + '/page', that.searchParam, function(response){
-        that.page.data = response.body.data.data;
-        that.page.total = response.body.data.recordsTotal;
+      that.treeData = [];
+      that.resetCurrentNodeData();
+      that.resetChildNodeData();
+      that.resetBotherNodeData();
+      that.showChildRow = false;
+      that.showBotherRow = false;
+      var parentId = -1;
+      this.$AJAX.GET(this, this.fn + '/getByParentId?parentId='+parentId, null, function(response){
+        var children = response.body.data;
+        if(children){
+          for(var i=0;i<children.length;i++){
+            that.treeData.push(children[i]);
+          }
+        }else{
+          that.currentNodeData.id = -1;
+          that.currentNodeData.label = '中国';
+          that.currentNodeData.parentId = '-';
+        }
       });
     },
-    reset(){
-      this.searchParam.parentId = '';
-      this.searchParam.name = '';
-      this.searchParam.type = '';
-      this.search();
-    },
-    pageSizeChange(val) {
-      this.searchParam.length = val;
-      this.pageNoChange(this.page.currentPage);
-    },
-    pageNoChange(val) {
-      this.searchParam.start = (val-1)*this.searchParam.length;
-      this.search();
-    },
-    pageSelectionChange(val) {
-      this.page.selection = [];
-      if(val && val.length > 0){
-        for(var i=0;i<val.length;i++){
-          var obj = val[i];
-          var dist = {};
-          dist.id = obj.id;
-          dist.arg1 = obj.fullname;
-          dist.arg2 = obj.type
-          this.page.selection.push(dist);
-        }
+    loadChildren(node, resolve){
+      var that = this;
+      that.resolve = resolve;
+      var parentId = node.data.id;
+      if(parentId){
+        that.$AJAX.GET(that, that.fn + '/getByParentId?parentId='+parentId, null, function(response){
+          var childrenData = [];
+          var data = response.body.data;
+          if(data){
+            for(var i=0;i<data.length;i++){
+              childrenData.push(data[i]);
+            }
+          }
+          resolve(childrenData);
+        });
       }
     },
-    cleanSmd(){
-      this.smdParam.id = '';
-      this.smdParam.parentId = '';
-      this.smdParam.name = '';
-      this.smdParam.fullname = '';
-      this.smdParam.fullpath = '';
-      this.smdParam.type = '';
+    handleNodeClick(data){
+      this.currentNodeData = data;
+      this.childNodeData.parentId = this.currentNodeData.id;
+      this.botherNodeData.parentId = this.currentNodeData.parentId;
+    },
+    showChildRowClick(){
+      this.resetChildNodeData();
+      this.childNodeData.parentId = this.currentNodeData.id;
+      this.showChildRow = !this.showChildRow;
+      this.showBotherRow = false;
+    },
+    resetCurrentNodeData(){
+      this.currentNodeData.id = '';
+      this.currentNodeData.label = '';
+      this.currentNodeData.parentId = '';
+    },
+    resetChildNodeData(){
+      this.childNodeData.id = '';
+      this.childNodeData.label = '';
+      this.childNodeData.parentId = '';
+    },
+    showBotherRowClick(){
+      this.resetBotherNodeData();
+      this.botherNodeData.parentId = this.currentNodeData.parentId;
+      this.showBotherRow = !this.showBotherRow;
+      this.showChildRow = false;
+    },
+    resetBotherNodeData(){
+      this.botherNodeData.id = '';
+      this.botherNodeData.label = '';
+      this.botherNodeData.parentId = '';
+    },
+    saveChildNodeData(){
+      var that = this;
+      that.$AJAX.POST(that, that.childNodeData, that.fn + '/save', true, function(response){
+        var parentId = that.childNodeData.parentId;
+        if(parentId) {
+          var childrenData = [];
+          that.$AJAX.GET(that, that.fn + '/getByParentId?parentId=' + parentId, null, function (response) {
+            var children = response.body.data;
+            if (children) {
+              var currentData = that.$refs.tree.getNode(that.currentNodeData.id).data;
+              currentData.children = [];
+              for (var i = 0; i < children.length; i++) {
+                currentData.children.push(children[i]);
+              }
+              that.resetChildNodeData();
+              that.childNodeData.parentId = that.currentNodeData.id;
+            }
+          });
+        }
+      })
+    },
+    saveBotherNodeData(){
+      var that = this;
+      that.$AJAX.POST(that, that.botherNodeData, that.fn + '/save', true, function(response){
+        var parentId = that.botherNodeData.parentId;
+        if(parentId == -1){
+          that.initTree();
+        }else{
+          that.$AJAX.GET(that, that.fn + '/getByParentId?parentId=' + parentId, null, function (response) {
+            debugger
+            var children = response.body.data;
+            if (children) {
+              var parentData = that.$refs.tree.getNode(parentId).data;
+              parentData.children = [];
+              for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                parentData.children.push(children[i]);
+              }
+              that.resetBotherNodeData();
+              that.botherNodeData.parentId = that.currentNodeData.parentId;
+            }
+          });
+        }
+      });
     }
   },
   mounted: function () {
-    this.search();
+    this.initTree();
   }
 }
 </script>

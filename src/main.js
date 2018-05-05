@@ -53,21 +53,27 @@ var formatParam = function(realURL, params) {
 Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
   vm.btnLoading = true;
   vm.tabLoading = true;
-  var url = formatParam(basePath + uri, params);
-    vm.$http.get(url, []).then((response) => {
-      if(response.body.code == 200){
-        vm.$message.success(response.body.message);
-        success(response);
-      }else{
-        vm.$message.error(response.body.message);
-      }
-      vm.tabLoading = false;
-      vm.btnLoading = false;
-    }, (response) => {
-      vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
-      vm.btnLoading = false;
-      vm.tabLoading = false;
-    });
+
+  var url;
+  if(params == null){
+    url = basePath + uri;
+  }else{
+    url = formatParam(basePath + uri, params);
+  }
+  vm.$http.get(url, []).then((response) => {
+    if(response.body.code == 200){
+      vm.$message.success(response.body.message);
+      success(response);
+    }else{
+      vm.$message.error(response.body.message);
+    }
+    vm.tabLoading = false;
+    vm.btnLoading = false;
+  }, (response) => {
+    vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
+    vm.btnLoading = false;
+    vm.tabLoading = false;
+  });
 }
 
 /**
