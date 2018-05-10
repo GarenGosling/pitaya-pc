@@ -114,7 +114,8 @@
           that.close();
           that.vm.search();
         });
-      },
+      }
+
     }
   }
 </script>

@@ -51,8 +51,8 @@
       <el-table-column prop="realName" label="姓名" width="100" fixed></el-table-column>
       <el-table-column prop="phone" label="手机号"  width="110"></el-table-column>
       <el-table-column prop="idNumber" label="身份证号"  width="180"></el-table-column>
-      <el-table-column prop="province" label="省份" :formatter="provinceFmt" width="120"></el-table-column>
-      <el-table-column prop="city" label="城市" :formatter="cityFmt" width="120"></el-table-column>
+      <el-table-column prop="provinceLabel" label="省份"  width="120"></el-table-column>
+      <el-table-column prop="cityLabel" label="城市" width="120"></el-table-column>
       <el-table-column prop="wechat" label="微信号" width="120"></el-table-column>
       <el-table-column prop="qq" label="QQ号" width="120"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
@@ -113,8 +113,8 @@ export default {
         password: '',
         phone: '',
         idNumber: '',
-        province: '',
-        city: '',
+        province: -1,
+        city: -1,
         wechat: '',
         qq: '',
         email: '',
@@ -125,18 +125,8 @@ export default {
         roles: [],
       },
       options: {
-        province: [
-          {value: '01',label: '北京'},
-          {value: '02',label: '上海'},
-          {value: '03',label: '河北'},
-          {value: '04',label: '黑龙江'},
-        ],
-        city: [
-          {value: '01',label: '通州'},
-          {value: '02',label: '朝阳'},
-          {value: '03',label: '丰台'},
-          {value: '04',label: '海淀'},
-        ],
+        province: [],
+        city: [],
         roles: [
           {value: 'AAA',label: '超级管理员'},
           {value: 'BBB',label: '公司管理员'},
@@ -184,12 +174,6 @@ export default {
         }
       }
     },
-    provinceFmt(row, column){
-      return this.$OPTIONS(row.province, this.options.province);
-    },
-    cityFmt(row, column){
-      return this.$OPTIONS(row.city, this.options.city);
-    },
     createTimeFmt(row, column){
       return new Date(row.createTime).format("yyyy-MM-dd hh:mm:ss");
     },
@@ -198,10 +182,45 @@ export default {
         this.smdParam[p] = '';
       }
       this.smdParamExtend.roles = [];
+    },
+    initProvince(){
+      var that = this;
+      that.$AJAX.GET(that, 'sysArea/getOptionsByParentId?parentId=0', null, function (response) {
+        var data = response.body.data;
+        if(data){
+          that.options.province = [];
+          for(var i=0;i<data.length;i++){
+            var obj = data[i];
+            obj.value = obj.value + "";
+            that.options.province.push(obj);
+          }
+        }
+      });
+    }
+  },
+  watch: {
+    'smdParam.province': function(val){
+      var that = this;
+      if(val){
+        that.$AJAX.GET(that, 'sysArea/getOptionsByParentId?parentId=' + val, null, function (response) {
+          var data = response.body.data;
+          if(data){
+            that.options.city = [];
+            for(var i=0;i<data.length;i++){
+              var obj = data[i];
+              obj.value = obj.value + "";
+              that.options.city.push(obj);
+            }
+          }
+        });
+      }else{
+        that.options.city = [];
+      }
     }
   },
   mounted: function () {
     this.search();
+    this.initProvince();
   }
 }
 </script>

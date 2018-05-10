@@ -22,9 +22,9 @@
       </el-row>
       <el-row :gutter="20" class="my-row">
         <el-col :span="3" class="my-head">省份：</el-col>
-        <el-col :span="9" class="my-content">{{smdParam.province || '-'}}</el-col>
+        <el-col :span="9" class="my-content">{{rowData.provinceLabel || '-'}}</el-col>
         <el-col :span="3" class="my-head">城市：</el-col>
-        <el-col :span="9" class="my-content">{{smdParam.city || '-'}}</el-col>
+        <el-col :span="9" class="my-content">{{rowData.cityLabel || '-'}}</el-col>
       </el-row>
       <el-row :gutter="20" class="my-row">
         <el-col :span="3" class="my-head">微信：</el-col>
