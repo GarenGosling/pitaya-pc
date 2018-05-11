@@ -59,13 +59,13 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
-                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showChildRow" @click="showChildRowClick">新增子节点</el-button>
-                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showChildRow"  @click="showChildRowClick">新增子节点</el-button>
-                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showBotherRow && currentNodeData.level != 0" @click="showBotherRowClick">新增兄弟节点</el-button>
-                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showBotherRow && currentNodeData.level != 0"  @click="showBotherRowClick">新增兄弟节点</el-button>
-                <el-button type="primary" size="small" plain @click="updateNode">修改</el-button>
-                <el-button type="danger" size="small" plain @click="deleteNode">删除</el-button>
-                <el-button type="danger" size="small" plain @click="deleteCheckedKeys">删除勾选项</el-button>
+                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showChildRow" @click="showChildRowClick" :loading="btnLoading">子节点</el-button>
+                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showChildRow"  @click="showChildRowClick" :loading="btnLoading">子节点</el-button>
+                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showBotherRow && currentNodeData.level != 0" @click="showBotherRowClick" :loading="btnLoading">兄弟节点</el-button>
+                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showBotherRow && currentNodeData.level != 0"  @click="showBotherRowClick" :loading="btnLoading">兄弟节点</el-button>
+                <el-button type="primary" size="small" plain @click="updateNode" :loading="btnLoading">修改</el-button>
+                <el-button type="danger" size="small" plain @click="deleteNode" :loading="btnLoading">删除</el-button>
+                <el-button type="danger" size="small" plain @click="deleteCheckedKeys" :loading="btnLoading">勾选删除</el-button>
               </el-col>
             </el-row>
           </div>
@@ -96,7 +96,7 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
-                <el-button type="primary" size="small" plain @click="saveChildNodeData">提交</el-button>
+                <el-button type="primary" size="small" plain @click="saveChildNodeData" :loading="btnLoading">提交</el-button>
               </el-col>
             </el-row>
           </div>
@@ -127,7 +127,7 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
-                <el-button type="primary" size="small" plain @click="saveBotherNodeData">提交</el-button>
+                <el-button type="primary" size="small" plain @click="saveBotherNodeData" :loading="btnLoading">提交</el-button>
               </el-col>
             </el-row>
           </div>
@@ -176,7 +176,8 @@ export default {
       },
       showChildRow: false,
       showBotherRow: false,
-      defaultExpandedKeys: [0]
+      defaultExpandedKeys: [0],
+      btnLoading: false
     }
   },
   watch: {
@@ -330,7 +331,7 @@ export default {
     },
     deleteNode(){
       var that = this;
-
+      that.btnLoading = true;
       this.$confirm('此操作将永久删除该节点及其子节点, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -350,6 +351,7 @@ export default {
               }
             });
           }
+          that.btnLoading = false;
         });
       }).catch(() => {
         this.$message({
@@ -360,6 +362,7 @@ export default {
 
     },
     deleteCheckedKeys(){
+      this.btnLoading = true;
       debugger
       var checkedKeysArr = this.$refs.tree.getCheckedKeys();
       if(!checkedKeysArr || checkedKeysArr.length == 0){
@@ -382,6 +385,7 @@ export default {
       var that = this;
       that.$AJAX.DELETE(that, that.fn + '/delete?ids=' + checkedKeys, function(response){
         that.initTree();
+        that.btnLoading = false;
       });
 
     }
