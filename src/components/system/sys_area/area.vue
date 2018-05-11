@@ -8,7 +8,17 @@
           </div>
           <div class="grid-content bg-purple" style="height: calc(100vh - 300px);overflow:auto;">
             <el-input placeholder="输入关键字进行过滤" v-model="filterText" clearable></el-input>
-            <el-tree ref="tree" :data="treeData" :default-expanded-keys="defaultExpandedKeys" :filter-node-method="filterNode"	show-checkbox check-strictly node-key="id" highlight-current accordion @node-click="handleNodeClick"></el-tree>
+            <el-tree ref="tree"
+                     :data="treeData"
+                     :default-expanded-keys="defaultExpandedKeys"
+                     :filter-node-method="filterNode"
+                     show-checkbox
+                     check-strictly
+                     node-key="id"
+                     highlight-current
+                     accordion
+                     draggable
+                     @node-click="handleNodeClick"></el-tree>
           </div>
         </el-card>
       </div>
@@ -59,13 +69,20 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
-                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showChildRow" @click="showChildRowClick" :loading="btnLoading">子节点</el-button>
-                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showChildRow"  @click="showChildRowClick" :loading="btnLoading">子节点</el-button>
-                <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showBotherRow && currentNodeData.level != 0" @click="showBotherRowClick" :loading="btnLoading">兄弟节点</el-button>
-                <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showBotherRow && currentNodeData.level != 0"  @click="showBotherRowClick" :loading="btnLoading">兄弟节点</el-button>
-                <el-button type="primary" size="small" plain @click="updateNode" :loading="btnLoading">修改</el-button>
-                <el-button type="danger" size="small" plain @click="deleteNode" :loading="btnLoading">删除</el-button>
-                <el-button type="danger" size="small" plain @click="deleteCheckedKeys" :loading="btnLoading">勾选删除</el-button>
+                <el-tooltip class="item" effect="dark" content="点击“子节点”按钮，展开或关闭新增子节点的页面" placement="bottom">
+                  <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showChildRow" @click="showChildRowClick" :loading="winBtnLoading">子节点</el-button>
+                  <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showChildRow"  @click="showChildRowClick" :loading="winBtnLoading">子节点</el-button>
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="点击“兄弟节点”按钮，展开或关闭新增兄弟节点的页面" placement="bottom" v-if="currentNodeData.level != 0">
+                  <el-button size="small" plain icon="el-icon-arrow-down" v-if="!showBotherRow && currentNodeData.level != 0" @click="showBotherRowClick" :loading="winBtnLoading">兄弟节点</el-button>
+                  <el-button type="success" size="small" icon="el-icon-arrow-up" v-if="showBotherRow && currentNodeData.level != 0"  @click="showBotherRowClick" :loading="winBtnLoading">兄弟节点</el-button>
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="点击“修改”按钮，修改当前节点" placement="bottom">
+                  <el-button type="primary" size="small" plain @click="updateNode" :loading="winBtnLoading">修改</el-button>
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="点击“删除”按钮，删除选中的节点及其子节点" placement="bottom">
+                  <el-button type="danger" size="small" plain @click="deleteCheckedKeys" :loading="winBtnLoading">删除</el-button>
+                </el-tooltip>
               </el-col>
             </el-row>
           </div>
@@ -96,7 +113,7 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
-                <el-button type="primary" size="small" plain @click="saveChildNodeData" :loading="btnLoading">提交</el-button>
+                <el-button type="primary" size="small" plain @click="saveChildNodeData" :loading="winBtnLoading">提交</el-button>
               </el-col>
             </el-row>
           </div>
@@ -127,7 +144,7 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
-                <el-button type="primary" size="small" plain @click="saveBotherNodeData" :loading="btnLoading">提交</el-button>
+                <el-button type="primary" size="small" plain @click="saveBotherNodeData" :loading="winBtnLoading">提交</el-button>
               </el-col>
             </el-row>
           </div>
@@ -177,7 +194,7 @@ export default {
       showChildRow: false,
       showBotherRow: false,
       defaultExpandedKeys: [0],
-      btnLoading: false
+      winBtnLoading: false
     }
   },
   watch: {
@@ -204,25 +221,16 @@ export default {
       that.treeData = [];
       that.showChildRow = false;
       that.showBotherRow = false;
-      this.$AJAX.GET(this, this.fn + '/getAll', null, function(response){
+      that.$AJAX.GET(this, that.fn + '/getTree', null, function(response){
         that.currentNodeData = response.body.data;
         that.treeData.push(that.currentNodeData);
       });
     },
-    loadChildren(node, resolve){
-      var that = this;
-      var parentId = node.data.id;
-      if(parentId != null && parentId != undefined){
-        that.$AJAX.GET(that, that.fn + '/getByParentId?parentId='+parentId, null, function(response){
-          var childrenData = [];
-          var data = response.body.data;
-          if(data){
-            for(var i=0;i<data.length;i++){
-              childrenData.push(data[i]);
-            }
-          }
-          resolve(childrenData);
-        });
+    expandNode(key){
+      this.defaultExpandedKeys = [];
+      this.defaultExpandedKeys.push(0);
+      if(key){
+        this.defaultExpandedKeys.push(key);
       }
     },
     handleNodeClick(data){
@@ -237,16 +245,6 @@ export default {
       this.showChildRow = !this.showChildRow;
       this.showBotherRow = false;
     },
-    resetCurrentNodeData(){
-      this.currentNodeData.id = '';
-      this.currentNodeData.label = '';
-      this.currentNodeData.parentId = '';
-    },
-    resetChildNodeData(){
-      this.childNodeData.id = '';
-      this.childNodeData.label = '';
-      this.childNodeData.parentId = '';
-    },
     showBotherRowClick(){
       this.resetBotherNodeData();
       this.botherNodeData.parentId = this.currentNodeData.parentId;
@@ -254,54 +252,51 @@ export default {
       this.showBotherRow = !this.showBotherRow;
       this.showChildRow = false;
     },
+    resetCurrentNodeData(){
+      this.currentNodeData.id = '';
+      this.currentNodeData.label = '';
+      this.currentNodeData.parentId = '';
+      this.currentNodeData.fullPath = '';
+      this.currentNodeData.fullName = '';
+      this.currentNodeData.level = '';
+      this.currentNodeData.children = [];
+    },
+    resetChildNodeData(){
+      this.childNodeData.id = '';
+      this.childNodeData.label = '';
+      this.childNodeData.parentId = '';
+      this.childNodeData.fullPath = '';
+      this.childNodeData.fullName = '';
+      this.childNodeData.level = '';
+      this.childNodeData.children = [];
+    },
     resetBotherNodeData(){
       this.botherNodeData.id = '';
       this.botherNodeData.label = '';
       this.botherNodeData.parentId = '';
+      this.botherNodeData.fullPath = '';
+      this.botherNodeData.fullName = '';
+      this.botherNodeData.level = '';
+      this.botherNodeData.children = [];
+    },
+    setCurrentNodeData(id){
+      var that = this;
+      that.$AJAX.GET(that, that.fn + '/getById', null, function(response){
+        that.currentNodeData = response.body.data;
+      });
     },
     saveChildNodeData(){
       var that = this;
       that.$AJAX.POST(that, that.childNodeData, that.fn + '/save', true, function(response){
-        var parentId = that.childNodeData.parentId;
-        if(parentId != null && parentId != undefined) {
-          that.$AJAX.GET(that, that.fn + '/getByParentId?parentId=' + parentId, null, function (response) {
-            debugger
-            var children = response.body.data;
-            if (children) {
-              var currentData = that.$refs.tree.getNode(that.currentNodeData.id).data;
-              currentData.children = [];
-              for (var i = 0; i < children.length; i++) {
-                currentData.children.push(children[i]);
-              }
-              that.resetChildNodeData();
-              that.childNodeData.parentId = that.currentNodeData.id;
-            }
-          });
-        }
-      })
+        that.initTree();
+        that.expandNode(that.childNodeData.parentId);
+      });
     },
     saveBotherNodeData(){
       var that = this;
       that.$AJAX.POST(that, that.botherNodeData, that.fn + '/save', true, function(response){
-        var parentId = that.botherNodeData.parentId;
-        if(parentId == -1){
-          that.initTree();
-        }else{
-          that.$AJAX.GET(that, that.fn + '/getByParentId?parentId=' + parentId, null, function (response) {
-            debugger
-            var children = response.body.data;
-            if (children) {
-              var parentData = that.$refs.tree.getNode(parentId).data;
-              parentData.children = [];
-              for (var i = 0; i < children.length; i++) {
-                var child = children[i];
-                parentData.children.push(children[i]);
-              }
-              that.resetBotherNodeData();
-              that.botherNodeData.parentId = that.currentNodeData.parentId;
-            }
-          });
-        }
+        that.initTree();
+        that.expandNode(that.botherNodeData.parentId);
       });
     },
     updateNode(){
@@ -309,61 +304,11 @@ export default {
       var params = [];
       params.push(that.currentNodeData);
       that.$AJAX.PUT(that, params, that.fn + '/update', function(response){
-        var parentId = that.currentNodeData.parentId;
-        if(parentId != null && parentId != undefined) {
-          that.$AJAX.GET(that, that.fn + '/getByParentId?parentId=' + parentId, null, function (response) {
-            debugger
-            var children = response.body.data;
-            if (children) {
-              var parentData = that.$refs.tree.getNode(that.currentNodeData.parentId).data;
-              parentData.children = [];
-              for (var i = 0; i < children.length; i++) {
-                if(children[i].id == that.currentNodeData.id){
-                  that.currentNodeData = children[i];
-                }
-                parentData.children.push(children[i]);
-              }
-
-            }
-          });
-        }
-      })
-    },
-    deleteNode(){
-      var that = this;
-      that.btnLoading = true;
-      this.$confirm('此操作将永久删除该节点及其子节点, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        that.$AJAX.DELETE(that, that.fn + '/delete?ids=' + that.currentNodeData.id, function(response){
-          var parentId = that.currentNodeData.parentId;
-          if(parentId != null && parentId != undefined) {
-            that.$AJAX.GET(that, that.fn + '/getByParentId?parentId=' + parentId, null, function (response) {
-              var children = response.body.data;
-              if (children) {
-                var parentData = that.$refs.tree.getNode(that.currentNodeData.parentId).data;
-                parentData.children = [];
-                for (var i = 0; i < children.length; i++) {
-                  parentData.children.push(children[i]);
-                }
-              }
-            });
-          }
-          that.btnLoading = false;
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
+        that.initTree();
+        that.expandNode(that.currentNodeData.parentId);
       });
-
     },
     deleteCheckedKeys(){
-      this.btnLoading = true;
-      debugger
       var checkedKeysArr = this.$refs.tree.getCheckedKeys();
       if(!checkedKeysArr || checkedKeysArr.length == 0){
         this.$message({
@@ -383,9 +328,20 @@ export default {
         }
       }
       var that = this;
-      that.$AJAX.DELETE(that, that.fn + '/delete?ids=' + checkedKeys, function(response){
-        that.initTree();
-        that.btnLoading = false;
+      this.$confirm('此操作将永久删除勾选的节点及其子节点, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        that.$AJAX.DELETE(that, that.fn + '/delete?ids=' + checkedKeys, function(response){
+          that.initTree();
+          that.expandNode();
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
       });
 
     }
