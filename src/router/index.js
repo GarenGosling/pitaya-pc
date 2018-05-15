@@ -10,12 +10,12 @@ import hr from '@/components/company/hr'
 import org from '@/components/company/org'
 import post from '@/components/company/post'
 import log from '@/components/system/log'
-import permission from '@/components/system/permission'
 import role from '@/components/system/role'
 import user from '@/components/system/sys_user/user'
 import area from '@/components/system/sys_area/area'
 import increment from '@/components/system/sys_increment/increment'
 import dictionary from '@/components/system/sys_dictionary/dictionary'
+import permission from '@/components/system/sys_permission/permission'
 
 Vue.use(Router)
 
