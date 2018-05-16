@@ -13,8 +13,8 @@
 
     <!-- 按钮 开始-->
     <el-row style="text-align: left;margin-top: 10px;padding-bottom:10px;border-bottom: 1px solid #F2F6FC;">
-      <my-search :btnLoading="btnLoading" @search="search"></my-search>
-      <my-reset :btnLoading="btnLoading" @reset="reset"></my-reset>
+      <my-search :vm="this"></my-search>
+      <my-reset :vm="this"></my-reset>
       <save :btnLoading="btnLoading" :smdParam="smdParam" @search="search" @cleanSmd="cleanSmd" :fn="fn"></save>
       <my-remove :btnLoading="btnLoading" :vm="this" lab1="英文名称" lab2="中文名称" :fn="fn" removeBy="name" @search="search"></my-remove>
     </el-row>
@@ -111,7 +111,7 @@ export default {
   methods: {
     search(){
       var that = this;
-      this.$AJAX.GET(this, this.fn + '/page', that.searchParam, function(response){
+      this.$AJAX.GET(that, that.fn + '/page', that.searchParam, function(response){
         that.page.data = response.body.data.data;
         that.page.total = response.body.data.recordsTotal;
       });
