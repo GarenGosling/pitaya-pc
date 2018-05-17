@@ -4,7 +4,7 @@
       <div style="width:98%;margin-left:1%;">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span style="font-size: 16px;"><i class="el-icon-picture-outline"></i>&nbsp;行政区域</span>
+            <span style="font-size: 16px;"><i class="el-icon-tickets"></i>&nbsp;数据字典</span>
           </div>
           <div class="grid-content bg-purple" style="height: calc(100vh - 300px);overflow:auto;">
             <el-input placeholder="输入关键字进行过滤" v-model="filterText" clearable></el-input>
@@ -27,7 +27,7 @@
       <div style="width:98%;margin-left:1%;">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span style="font-size: 16px;"><i class="el-icon-location-outline"></i>&nbsp;当前节点信息</span>
+            <span style="font-size: 16px;"><i class="el-icon-document"></i>&nbsp;当前节点信息</span>
           </div>
           <div class="grid-content bg-purple-light" :style="currentDivStyle">
             <el-row :gutter="20" class="my-row">
