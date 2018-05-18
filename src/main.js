@@ -61,9 +61,39 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
     url = formatParam(basePath + uri, params);
   }
   vm.$http.get(url, []).then((response) => {
+      if(response.body.code == 200){
+        vm.$message.success(response.body.message);
+        success(response);
+      }else if(response.body.code == 400){
+        window.location.href = "#/login";
+      }else{
+        vm.$message.error(response.body.message);
+      }
+      vm.tabLoading = false;
+      vm.btnLoading = false;
+  }, (response) => {
+    vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
+    vm.btnLoading = false;
+    vm.tabLoading = false;
+  });
+}
+
+Vue.prototype.$AJAX.GET2 = function (vm, uri, params, success){
+  vm.btnLoading = true;
+  vm.tabLoading = true;
+
+  var url;
+  if(params == null){
+    url = basePath2 + uri;
+  }else{
+    url = formatParam(basePath2 + uri, params);
+  }
+  vm.$http.get(url, []).then((response) => {
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       success(response);
+    }else if(response.body.code == 400){
+      window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message);
     }
@@ -91,6 +121,8 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
+    }else if(response.body.code == 400){
+      window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message)
     }
@@ -116,6 +148,8 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
+    }else if(response.body.code == 400){
+      window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message)
     }
@@ -140,6 +174,8 @@ Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
+    }else if(response.body.code == 400){
+      window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message)
     }
@@ -195,6 +231,15 @@ Vue.prototype.$RESET = function(vm){
   }
   vm.search();
 }
+
+// Vue.http.interceptors.push((request, next) => {
+//   // request.credentials = true;
+//   var token = "abc";
+//   request.headers.set('token', token); //setting request.headers
+//   next((response) => {
+//     return response
+//   })
+// })
 
 /* eslint-disable no-new */
 new Vue({

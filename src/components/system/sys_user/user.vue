@@ -89,7 +89,7 @@ import Update from '@/components/system/sys_user/update'
 import Detail from '@/components/system/sys_user/detail'
 
 export default {
-  name: 'Index',
+  name: 'sysUser',
   components: {
     MySearch,MyReset,MyModel,MyImport,MyExport,MyDelete,MyRemove,
     Save,Update,Detail
@@ -127,13 +127,7 @@ export default {
       options: {
         province: [],
         city: [],
-        roles: [
-          {value: 'AAA',label: '超级管理员'},
-          {value: 'BBB',label: '公司管理员'},
-          {value: 'CCC',label: '业务管理员'},
-          {value: 'DDD',label: '系统管理员'},
-          {value: 'EEE',label: '报表管理员'},
-        ]
+        roles: []
       },
       page: {
         data: [],
@@ -196,6 +190,20 @@ export default {
           }
         }
       });
+    },
+    initRoleOptions(){
+      var that = this;
+      that.$AJAX.GET(that, 'sysRole/getOptionsAll', null, function (response) {
+        var data = response.body.data;
+          if(data){
+          that.options.roles = [];
+          for(var i=0;i<data.length;i++){
+            var obj = data[i];
+            obj.value = obj.value + "";
+            that.options.roles.push(obj);
+          }
+        }
+      });
     }
   },
   watch: {
@@ -221,6 +229,7 @@ export default {
   mounted: function () {
     this.search();
     this.initProvince();
+    this.initRoleOptions();
   }
 }
 </script>

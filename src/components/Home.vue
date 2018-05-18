@@ -234,7 +234,10 @@ export default {
     }
   },
   created: function () {
+    var that = this;
+    that.$AJAX.GET(that, 'test', null, function (response) {
 
+    });
   }
 }
 </script>

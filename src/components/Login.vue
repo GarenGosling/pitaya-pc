@@ -20,15 +20,15 @@
           <el-input
             placeholder="用户名"
             suffix-icon="el-icon-mobile-phone"
-            v-model="input2">
+            v-model="param.loginName">
           </el-input>
           <el-input
             placeholder="密码"
             suffix-icon="el-icon-view"
-            v-model="input2">
+            v-model="param.password">
           </el-input>
           <a href="">忘记密码了？</a><br>
-          <el-button type="primary">登录</el-button>
+          <el-button type="primary" @click="login()">登录</el-button>
         </form>
       </div>
     </div>
@@ -43,7 +43,21 @@ export default {
   name: 'Login',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      param: {
+        loginName: '',
+        password: ''
+      }
+    }
+  },
+  methods: {
+    login(){
+      var that = this;
+      that.$AJAX.GET2(that, 'login', that.param, function(response){
+        var loginInfo = response.body.data;
+        localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
+        console.log(loginInfo);
+        window.location.href = "/";
+      });
     }
   }
 }

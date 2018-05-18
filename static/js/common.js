@@ -1,4 +1,5 @@
 var basePath = 'http://localhost:9091/api/';
+var basePath2 = 'http://localhost:9091/';
 
 
 Date.prototype.format = function(fmt) {
