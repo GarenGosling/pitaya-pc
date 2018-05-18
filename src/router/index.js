@@ -10,12 +10,13 @@ import hr from '@/components/company/hr'
 import org from '@/components/company/org'
 import post from '@/components/company/post'
 import log from '@/components/system/log'
-import role from '@/components/system/role'
 import user from '@/components/system/sys_user/user'
 import area from '@/components/system/sys_area/area'
 import increment from '@/components/system/sys_increment/increment'
 import dictionary from '@/components/system/sys_dictionary/dictionary'
 import permission from '@/components/system/sys_permission/permission'
+import permission2 from '@/components/system/sys_permission/permission2'
+import role from '@/components/system/sys_role/role'
 
 Vue.use(Router)
 
@@ -71,6 +72,10 @@ export default new Router({
       path: '/permission',
       name: 'permission',
       component: permission
+    },{
+      path: '/permission2',
+      name: 'permission2',
+      component: permission2
     },{
       path: '/role',
       name: 'role',

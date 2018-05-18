@@ -279,7 +279,7 @@ export default {
       this.resetChildNodeData();
       this.childNodeData.parentId = this.currentNodeData.id;
       this.childNodeData.type = this.getChildType();
-      this.childNodeData.available = false;
+      this.childNodeData.available = true;
       this.showChildRow = !this.showChildRow;
       this.showBotherRow = false;
     },
@@ -287,7 +287,7 @@ export default {
       this.resetBotherNodeData();
       this.botherNodeData.parentId = this.currentNodeData.parentId;
       this.botherNodeData.type = this.currentNodeData.type;
-      this.botherNodeData.available = false;
+      this.botherNodeData.available = true;
       this.showBotherRow = !this.showBotherRow;
       this.showChildRow = false;
     },
