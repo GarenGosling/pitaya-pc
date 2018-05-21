@@ -43,6 +43,21 @@ var formatParam = function(realURL, params) {
   return realURL;
 }
 
+function getTicket(){
+  var ticket;
+  var loginInfo = JSON.parse(localStorage.getItem('loginInfo'));
+  if(!loginInfo){
+    window.location.href = "#/login";
+  }else{
+    ticket = loginInfo.ticket;
+    if(!ticket){
+      window.location.href = "#/login";
+    }else{
+      return ticket;
+    }
+  }
+}
+
 /**
  * my vue-resource put request
  * @param vm
@@ -54,16 +69,27 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
   vm.btnLoading = true;
   vm.tabLoading = true;
 
+  var ticket = getTicket();
+
   var url;
   if(params == null){
     url = basePath + uri;
   }else{
     url = formatParam(basePath + uri, params);
   }
-  vm.$http.get(url, []).then((response) => {
-      if(response.body.code == 200){
-        vm.$message.success(response.body.message);
-        success(response);
+
+  vm.$http({
+    url: url,
+    method: 'GET',
+    // 设置请求头
+    headers: {
+      'ticket': ticket
+    }
+  }).then(function (response) {
+    // 请求成功回调
+    if(response.body.code == 200){
+      vm.$message.success(response.body.message);
+      success(response);
       }else if(response.body.code == 400){
         window.location.href = "#/login";
       }else{
@@ -71,12 +97,14 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
       }
       vm.tabLoading = false;
       vm.btnLoading = false;
-  }, (response) => {
+  }, function (response) {
+    // 请求失败回调
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
     vm.btnLoading = false;
     vm.tabLoading = false;
   });
 }
+
 
 Vue.prototype.$AJAX.GET2 = function (vm, uri, params, success){
   vm.btnLoading = true;
@@ -106,6 +134,7 @@ Vue.prototype.$AJAX.GET2 = function (vm, uri, params, success){
   });
 }
 
+
 /**
  * my vue-resource post request
  * @param vm
@@ -117,7 +146,8 @@ Vue.prototype.$AJAX.GET2 = function (vm, uri, params, success){
 Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn){
   vm.winBtnLoading = true;
   var url = basePath + uri;
-  vm.$http.post(url, param).then((response) => {
+  var ticket = getTicket();
+  vm.$http.post(url, param, {headers: {'ticket': ticket}}).then((response) => {
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
@@ -144,7 +174,8 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn
 Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
   vm.winBtnLoading = true;
   var url = basePath + uri;
-  vm.$http.put(url, param).then((response) => {
+  var ticket = getTicket();
+  vm.$http.put(url, param, {headers: {'ticket': ticket}}).then((response) => {
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
@@ -170,7 +201,17 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
 Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
   vm.winBtnLoading = true;
   var url = basePath + uri;
-  vm.$http.delete(url, []).then((response) => {
+  var ticket = getTicket();
+
+  vm.$http({
+    url: url,
+    method: 'DELETE',
+    // 设置请求头
+    headers: {
+      'ticket': ticket
+    }
+  }).then(function (response) {
+    // 请求成功回调
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
@@ -180,7 +221,8 @@ Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
       vm.$message.error(response.body.message)
     }
     vm.winBtnLoading = false;
-  }, (response) => {
+  }, function (response) {
+    // 请求失败回调
     vm.$message.error('\"status\"'+response.body.status+',\"error\":'+response.body.error+',\"message\":'+response.body.message);
     vm.winBtnLoading = false;
   });
