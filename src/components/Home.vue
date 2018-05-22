@@ -230,7 +230,11 @@ export default {
       }
     },
     logout(){
-      window.location.href = "#/login";
+      var that = this;
+      this.$AJAX.GET(that, 'logout', null, function(response){
+        localStorage.removeItem('loginInfo');
+        window.location.href = "#/login";
+      });
     }
   },
   created: function () {
