@@ -68,6 +68,30 @@
               </el-col>
             </el-row>
             <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">icon：</el-col>
+              <el-col :span="8">
+                <el-select v-model="currentNodeData.icon" filterable placeholder="是否可用" style="width: 100%;">
+                  <el-option
+                    v-for="item in options.icon"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="4" class="col-left">是否可用：</el-col>
+              <el-col :span="8">
+                <el-select v-model="currentNodeData.available" filterable placeholder="是否可用" style="width: 100%;">
+                  <el-option
+                    v-for="item in options.available"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
                 <el-tooltip class="item" effect="dark" content="点击“子节点”按钮，展开或关闭新增子节点的页面" placement="bottom">
@@ -199,6 +223,9 @@ export default {
         available: [
           {value: true,label: '可用'},
           {value: false,label: '不可用'}
+        ],
+        icon: [
+
         ]
       },
       currentNodeData: {
@@ -208,7 +235,8 @@ export default {
         type: '',
         url: '',
         available: '',
-        children: []
+        children: [],
+        icon: ''
       },
       childNodeData: {
         id: '',
@@ -217,7 +245,8 @@ export default {
         type: '',
         url: '',
         available: '',
-        children: []
+        children: [],
+        icon: ''
       },
       botherNodeData: {
         id: '',
@@ -226,7 +255,8 @@ export default {
         type: '',
         url: '',
         available: '',
-        children: []
+        children: [],
+        icon: ''
       },
       showChildRow: false,
       showBotherRow: false,

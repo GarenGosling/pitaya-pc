@@ -18,82 +18,25 @@
                text-color="#fff"
                active-text-color="#ffd04b"
                unique-opened>
+
         <el-menu-item index="0" @click="toPath('#/', '首页', '0')">
           <i class="el-icon-tickets"></i>
           <span slot="title">首页</span>
         </el-menu-item>
-        <el-submenu index="01">
-          <template slot="title">
-            <i class="el-icon-star-off"></i>
-            <span slot="title">初始设置</span>
-          </template>
-          <el-menu-item index="0101" @click="toPath('#/increment', '编码管理', '0101')">
-            <i class="el-icon-document"></i>
-            <span slot="title">编码管理</span>
-          </el-menu-item>
-          <el-menu-item index="0202" @click="toPath('#/area', '地区管理', '0202')">
-            <i class="el-icon-document"></i>
-            <span slot="title">地区管理</span>
-          </el-menu-item>
-          <el-menu-item index="0103" @click="toPath('#/dictionary', '字典管理', '0103')">
-            <i class="el-icon-document"></i>
-            <span slot="title">字典管理</span>
-          </el-menu-item>
-          <el-menu-item index="0104" @click="toPath('#/permission', '权限管理', '0104')">
-            <i class="el-icon-document"></i>
-            <span slot="title">权限管理</span>
-          </el-menu-item>
-        </el-submenu>
-        <el-submenu index="02">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item index="0201" @click="toPath('#/role', '角色管理', '0201')">
-            <i class="el-icon-document"></i>
-            <span slot="title">角色管理</span>
-          </el-menu-item>
-          <el-menu-item index="0202" @click="toPath('#/user', '用户管理', '0202')">
-            <i class="el-icon-document"></i>
-            <span slot="title">用户管理</span>
-          </el-menu-item>
-          <el-menu-item index="0203" @click="toPath('#/log', '日志管理', '0203')">
-            <i class="el-icon-document"></i>
-            <span slot="title">日志管理</span>
-          </el-menu-item>
-        </el-submenu>
-        <el-submenu index="03">
-          <template slot="title">
-            <i class="el-icon-goods"></i>
-            <span slot="title">公司管理</span>
-          </template>
-          <el-menu-item index="0301" @click="toPath('#/org', '组织管理', '0301')">
-            <i class="el-icon-document"></i>
-            <span slot="title">组织管理</span>
-          </el-menu-item>
-          <el-menu-item index="0302" @click="toPath('#/post', '岗位管理', '0302')">
-            <i class="el-icon-document"></i>
-            <span slot="title">岗位管理</span>
-          </el-menu-item>
-          <el-menu-item index="0303" @click="toPath('#/hr', '员工管理', '0303')">
-            <i class="el-icon-document"></i>
-            <span slot="title">员工管理</span>
-          </el-menu-item>
-        </el-submenu>
-        <el-submenu index="04">
-          <template slot="title">
-            <i class="el-icon-service"></i>
-            <span slot="title">业务管理</span>
-          </template>
-          <el-menu-item index="0401" @click="toPath('#/allot', '分销管理', '0401')">
-            <i class="el-icon-document"></i>
-            <span slot="title">分销管理</span>
-          </el-menu-item>
-          <el-menu-item index="0402" @click="toPath('#/customer', '客户管理', '0402')">
-            <i class="el-icon-document"></i>
-            <span slot="title">客户管理</span>
-          </el-menu-item>
-        </el-submenu>
+        <div v-if="permissionTree.children" v-for="item in permissionTree.children" :key="item.id">
+          <el-submenu :index="item.id+''" v-if="item.type == 'branch'">
+            <template slot="title">
+              <i :class="item.icon"></i>
+              <span slot="title">{{item.label}}</span>
+            </template>
+            <div v-if="item.children" v-for="item2 in item.children" :key="item2.id">
+              <el-menu-item v-if="item2.type=='leaf'" :index="item2.id+''" @click="toPath('#/' + item2.url, item2.label, item2.id)">
+                <i :class="item2.icon"></i>
+                <span slot="title">{{item2.label}}</span>
+              </el-menu-item>
+            </div>
+          </el-submenu>
+        </div>
       </el-menu>
     </el-aside>
     <el-container>
@@ -152,7 +95,8 @@ export default {
       editableTabsValue2: '0',
       editableTabs2: [],
       tabIndex: 1,
-      input1: ''
+      input1: '',
+      permissionTree: {}
     }
   },
   methods: {
@@ -235,13 +179,23 @@ export default {
         localStorage.removeItem('loginInfo');
         window.location.href = "#/login";
       });
+    },
+    initPermissionTree(){
+      var loginInfo = JSON.parse(localStorage.getItem('loginInfo'));
+      if(loginInfo){
+        var permissionTree = loginInfo.permissionTree;
+        if(permissionTree){
+         this.permissionTree = permissionTree;
+        }
+      }
     }
+  },
+  mounted: function () {
+    this.initPermissionTree();
   },
   created: function () {
     var that = this;
-    that.$AJAX.GET(that, 'test', null, function (response) {
-
-    });
+    that.$AJAX.GET(that, 'test', null, function (response) {});
   }
 }
 </script>
