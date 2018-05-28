@@ -247,11 +247,13 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    initTree(){
+    initTree(isCloseWin){
       var that = this;
       that.treeData = [];
-      that.showChildRow = false;
-      that.showBotherRow = false;
+      if(isCloseWin == true){
+        that.showChildRow = false;
+        that.showBotherRow = false;
+      }
       that.$AJAX.GET(this, that.fn + '/getTree', null, function(response){
         that.currentNodeData = response.body.data;
         that.treeData.push(that.currentNodeData);
@@ -320,14 +322,14 @@ export default {
     saveChildNodeData(){
       var that = this;
       that.$AJAX.POST(that, that.childNodeData, that.fn + '/save', true, function(response){
-        that.initTree();
+        that.initTree(false);
         that.expandNode(that.childNodeData.parentId);
       });
     },
     saveBotherNodeData(){
       var that = this;
       that.$AJAX.POST(that, that.botherNodeData, that.fn + '/save', true, function(response){
-        that.initTree();
+        that.initTree(false);
         that.expandNode(that.botherNodeData.parentId);
       });
     },
@@ -336,7 +338,7 @@ export default {
       var params = [];
       params.push(that.currentNodeData);
       that.$AJAX.PUT(that, params, that.fn + '/update', function(response){
-        that.initTree();
+        that.initTree(false);
         that.expandNode(that.currentNodeData.parentId);
       });
     },
@@ -366,7 +368,7 @@ export default {
         type: 'warning'
       }).then(() => {
         that.$AJAX.DELETE(that, that.fn + '/delete?ids=' + checkedKeys, function(response){
-          that.initTree();
+          that.initTree(false);
           that.expandNode();
         });
       }).catch(() => {
@@ -379,7 +381,7 @@ export default {
     }
   },
   mounted: function () {
-    this.initTree();
+    this.initTree(true);
   }
 }
 </script>

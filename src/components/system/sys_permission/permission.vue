@@ -70,7 +70,7 @@
             <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">icon：</el-col>
               <el-col :span="8">
-                <el-select v-model="currentNodeData.icon" filterable placeholder="是否可用" style="width: 100%;">
+                <el-select v-model="currentNodeData.icon" filterable placeholder="图标" style="width: 100%;">
                   <el-option
                     v-for="item in options.icon"
                     :key="item.value"
@@ -79,16 +79,11 @@
                   </el-option>
                 </el-select>
               </el-col>
-              <el-col :span="4" class="col-left">是否可用：</el-col>
+              <el-col :span="4" class="col-left">图标预览：</el-col>
               <el-col :span="8">
-                <el-select v-model="currentNodeData.available" filterable placeholder="是否可用" style="width: 100%;">
-                  <el-option
-                    v-for="item in options.available"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
+                <div style="padding-top:10px; font-size:24px;">
+                  <i :class="currentNodeData.icon"></i>
+                </div>
               </el-col>
             </el-row>
             <el-row :gutter="20" class="my-row">
@@ -151,6 +146,25 @@
               </el-col>
             </el-row>
             <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">icon：</el-col>
+              <el-col :span="8">
+                <el-select v-model="childNodeData.icon" filterable placeholder="图标" style="width: 100%;">
+                  <el-option
+                    v-for="item in options.icon"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="4" class="col-left">图标预览：</el-col>
+              <el-col :span="8">
+                <div style="padding-top:10px; font-size:24px;">
+                  <i :class="childNodeData.icon"></i>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
               <el-col :span="4" class="col-left">&nbsp;</el-col>
               <el-col :span="20" style="text-align:left;">
                 <el-button type="primary" size="small" plain @click="saveChildNodeData" :loading="winBtnLoading">提交</el-button>
@@ -194,6 +208,25 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" class="my-row">
+              <el-col :span="4" class="col-left">icon：</el-col>
+              <el-col :span="8">
+                <el-select v-model="botherNodeData.icon" filterable placeholder="图标" style="width: 100%;">
+                  <el-option
+                    v-for="item in options.icon"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="4" class="col-left">图标预览：</el-col>
+              <el-col :span="8">
+                <div style="padding-top:10px; font-size:24px;">
+                  <i :class="botherNodeData.icon"></i>
+                </div>
               </el-col>
             </el-row>
             <el-row :gutter="20" class="my-row">
@@ -293,6 +326,12 @@ export default {
         that.treeData.push(that.currentNodeData);
       });
     },
+    initIconOptions(){
+      var that = this;
+      that.$AJAX.GET(that, 'option/icon', null, function(response){
+        that.options.icon = response.body.data;
+      });
+    },
     expandNode(key){
       this.defaultExpandedKeys = [];
       this.defaultExpandedKeys.push(0);
@@ -341,6 +380,7 @@ export default {
       this.currentNodeData.url = '';
       this.currentNodeData.available = '';
       this.currentNodeData.children = [];
+      this.currentNodeData.icon = '';
     },
     resetChildNodeData(){
       this.childNodeData.id = '';
@@ -350,6 +390,7 @@ export default {
       this.childNodeData.url = '';
       this.childNodeData.available = '';
       this.childNodeData.children = [];
+      this.childNodeData.icon = '';
     },
     resetBotherNodeData(){
       this.botherNodeData.id = '';
@@ -359,6 +400,7 @@ export default {
       this.botherNodeData.url = '';
       this.botherNodeData.available = '';
       this.botherNodeData.children = [];
+      this.botherNodeData.icon = '';
     },
     setCurrentNodeData(id){
       var that = this;
@@ -429,6 +471,7 @@ export default {
   },
   mounted: function () {
     this.initTree();
+    this.initIconOptions();
   }
 }
 </script>
