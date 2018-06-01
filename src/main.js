@@ -90,7 +90,7 @@ Vue.prototype.$AJAX.GET = function (vm, uri, params, success){
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       success(response);
-      }else if(response.body.code == 400){
+      }else if(response.body.code == 401){
         window.location.href = "#/login";
       }else{
         vm.$message.error(response.body.message);
@@ -120,7 +120,7 @@ Vue.prototype.$AJAX.GET2 = function (vm, uri, params, success){
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       success(response);
-    }else if(response.body.code == 400){
+    }else if(response.body.code == 401){
       window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message);
@@ -151,7 +151,7 @@ Vue.prototype.$AJAX.POST = function (vm, param, uri, isShowSuccessMsg, successFn
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
-    }else if(response.body.code == 400){
+    }else if(response.body.code == 401){
       window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message)
@@ -179,7 +179,7 @@ Vue.prototype.$AJAX.PUT = function (vm, param, uri, successFn){
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
-    }else if(response.body.code == 400){
+    }else if(response.body.code == 401){
       window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message)
@@ -215,7 +215,7 @@ Vue.prototype.$AJAX.DELETE = function (vm, uri, successFn){
     if(response.body.code == 200){
       vm.$message.success(response.body.message);
       successFn(response);
-    }else if(response.body.code == 400){
+    }else if(response.body.code == 401){
       window.location.href = "#/login";
     }else{
       vm.$message.error(response.body.message)
